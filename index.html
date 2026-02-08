@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCN AGENCY | Digital Cult</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CORE SETTINGS --- */
+        :root {
+            --bg: #050505;
+            --text: #F0F0F0;
+            --accent: #CCFF00; /* ACID GREEN */
+            --font-head: 'Syne', sans-serif;
+            --font-body: 'Space Grotesk', sans-serif;
+            --ease: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- FX LAYERS --- */
+        .noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05; z-index: 9000; pointer-events: none;
+        }
+
+        .curtain {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--accent); z-index: 5000;
+            transform: translateY(100%); transition: transform 0.8s var(--ease);
+        }
+        .curtain.active { transform: translateY(0); }
+        .curtain.exit { transform: translateY(-100%); }
+
+        .cursor {
+            position: fixed; top: 0; left: 0; width: 15px; height: 15px;
+            background: white; border-radius: 50%;
+            transform: translate(-50%, -50%); pointer-events: none; z-index: 9999;
+            mix-blend-mode: difference; transition: transform 0.1s, width 0.3s, height 0.3s;
+        }
+        body.hover .cursor { transform: translate(-50%, -50%) scale(5); background: var(--accent); mix-blend-mode: normal; opacity: 0.9; }
+
+        /* --- NAVIGATION --- */
+        header {
+            position: fixed; top: 0; width: 100%; padding: 30px 50px;
+            display: flex; justify-content: space-between; align-items: center; z-index: 1000;
+            background: linear-gradient(to bottom, rgba(5,5,5,0.9), transparent);
+        }
+        
+        /* LOGO STYLES */
+        .logo-container {
+            display: flex; align-items: center; gap: 15px;
+        }
+        .logo-svg {
+            width: 50px; height: 50px;
+            /* Leichter Glow für das Logo */
+            filter: drop-shadow(0 0 8px rgba(204, 255, 0, 0.4));
+        }
+        .logo-text {
+            font-family: var(--font-head); font-weight: 800; font-size: 1.8rem; 
+            color: white; letter-spacing: -1px;
+        }
+
+        .menu-btn {
+            font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            mix-blend-mode: difference; padding: 10px;
+        }
+
+        .nav-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #080808; z-index: 900;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s;
+        }
+        .nav-overlay.open { opacity: 1; pointer-events: all; }
+        .nav-link {
+            font-family: var(--font-head); font-size: 6vw; line-height: 1;
+            color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+            transition: 0.3s; text-transform: uppercase; margin: 5px 0;
+        }
+        .nav-link:hover { color: var(--accent); -webkit-text-stroke: 1px var(--accent); }
+
+        /* --- PAGES --- */
+        .page {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 120px 50px 50px 50px; 
+            opacity: 0; pointer-events: none; z-index: 0;
+            overflow-y: auto; scrollbar-width: none; 
+            display: flex; flex-direction: column; 
+        }
+        .page::-webkit-scrollbar { display: none; }
+        .page.active { opacity: 1; pointer-events: all; z-index: 10; }
+        .page-content-wrapper { margin: auto 0; width: 100%; }
+
+        /* --- HOME --- */
+        .hero-title {
+            font-family: var(--font-head); font-size: 11vw; line-height: 0.85;
+            font-weight: 800; text-transform: uppercase; mix-blend-mode: exclusion;
+            position: relative; z-index: 2; margin-bottom: 30px;
+        }
+        .hero-img-container {
+            position: absolute; top: 50%; right: 5%; 
+            transform: translateY(-50%); width: 45vw; height: 70vh; z-index: 1;
+            pointer-events: none;
+        }
+        .hero-img {
+            width: 100%; height: 100%; object-fit: contain;
+            filter: drop-shadow(0 0 30px rgba(204, 255, 0, 0.1));
+            animation: float 8s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(3deg); }
+        }
+        .grid-showcase { display: flex; gap: 20px; width: 50%; margin-top: 20px; }
+        .grid-img {
+            width: 150px; height: 100px; object-fit: cover; border-radius: 4px;
+            filter: grayscale(100%); transition: 0.4s; opacity: 0.6; border: 1px solid #333;
+        }
+        .grid-img:hover { filter: grayscale(0%); opacity: 1; transform: scale(1.1); border-color: var(--accent); }
+
+        /* --- ABOUT --- */
+        .about-layout {
+            display: grid; grid-template-columns: 1fr 1.2fr; gap: 50px; align-items: center;
+            width: 100%; max-width: 1400px; margin: 0 auto;
+        }
+        .about-pic {
+            width: 100%; height: 500px; object-fit: cover; border-radius: 8px;
+            filter: grayscale(100%) contrast(1.2); transition: 1s;
+        }
+        .about-pic:hover { filter: grayscale(0%); }
+        .about-text h2 { font-family: var(--font-head); font-size: 4rem; margin-bottom: 20px; color: var(--accent); }
+        .about-text p { font-size: 1.3rem; color: #aaa; line-height: 1.6; }
+
+        /* --- SERVICES LIST --- */
+        .service-row {
+            border-bottom: 1px solid rgba(255,255,255,0.1); padding: 40px 0;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: 0.4s; position: relative; cursor: none;
+        }
+        .service-row:first-child { border-top: 1px solid rgba(255,255,255,0.1); }
+        .service-row:hover { padding-left: 20px; padding-right: 20px; background: rgba(255,255,255,0.03); }
+        .service-row h3 { font-size: 3vw; font-family: var(--font-head); transition: 0.3s; }
+        .service-row:hover h3 { color: var(--accent); }
+        .price-tag { font-family: var(--font-body); font-size: 1.2rem; text-align: right; }
+
+        /* SPEZIAL STYLE FÜR DEMO ROW */
+        .special-demo-row {
+            border: 1px solid var(--accent) !important;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            background: rgba(204, 255, 0, 0.05);
+            padding-left: 20px; padding-right: 20px;
+        }
+        .special-demo-row:hover {
+            background: rgba(204, 255, 0, 0.1);
+            transform: scale(1.02);
+        }
+
+        /* --- REVIEWS --- */
+        .big-rating-display { display: flex; align-items: center; gap: 20px; margin-bottom: 60px; }
+        .rating-number { font-family: var(--font-head); font-size: 8rem; font-weight: 800; line-height: 1; color: var(--text); }
+        .rating-star-big { font-size: 6rem; color: var(--accent); animation: spin 10s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .reviews-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; width: 100%; }
+        .review-card {
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px; border-radius: 12px; transition: 0.4s; position: relative;
+        }
+        .review-card:hover { border-color: var(--accent); transform: translateY(-5px); background: rgba(255, 255, 255, 0.05); }
+        .stars { color: var(--accent); margin-bottom: 20px; font-size: 1.2rem; }
+        .review-text { font-size: 1.1rem; line-height: 1.6; color: #ddd; margin-bottom: 25px; }
+        .review-author { font-family: var(--font-head); font-weight: 700; font-size: 1.2rem; color: #fff; }
+        .verified { font-size: 0.8rem; color: #666; text-transform: uppercase; margin-left: 10px; }
+
+        /* --- DISCOUNT POPUP --- */
+        .discount-popup {
+            position: fixed; bottom: 30px; right: 30px; 
+            background: rgba(20, 20, 20, 0.9); backdrop-filter: blur(10px);
+            border: 1px solid var(--accent); border-radius: 12px;
+            padding: 30px; max-width: 400px; z-index: 8000;
+            transform: translateY(200%); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        .discount-popup.visible { transform: translateY(0); }
+        .discount-close {
+            position: absolute; top: 10px; right: 15px; font-size: 1.5rem; 
+            color: #666; cursor: none; transition: 0.3s;
+        }
+        .discount-close:hover { color: white; }
+        .discount-btn {
+            background: var(--accent); color: black; border: none; width: 100%;
+            padding: 15px; font-weight: 800; font-family: var(--font-head); font-size: 1.1rem;
+            margin-top: 15px; text-transform: uppercase; border-radius: 4px;
+            transition: 0.2s;
+        }
+        .discount-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(204, 255, 0, 0.4); }
+
+        /* --- DETAILS MODAL --- */
+        .details-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 2500;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.5s;
+        }
+        .details-modal.open { opacity: 1; pointer-events: all; }
+        .details-content {
+            width: 90%; max-width: 600px; text-align: center;
+        }
+        .details-title {
+            font-family: var(--font-head); font-size: 3rem; color: var(--accent); margin-bottom: 40px;
+        }
+        .detail-item {
+            font-size: 1.5rem; margin-bottom: 20px; opacity: 0; transform: translateY(20px);
+            transition: all 0.5s ease; border-bottom: 1px solid #222; padding-bottom: 10px;
+        }
+        .detail-item.show { opacity: 1; transform: translateY(0); }
+        .details-action-btn {
+            background: white; color: black; border: none; padding: 20px 50px;
+            font-size: 1.5rem; font-weight: bold; margin-top: 40px; 
+            opacity: 0; transition: 0.5s; font-family: var(--font-head);
+        }
+        .details-action-btn.show { opacity: 1; }
+        .details-action-btn:hover { background: var(--accent); }
+
+        /* --- CONTACT FORM --- */
+        .contact-panel {
+            position: fixed; top: 0; right: 0; width: 0; height: 100%;
+            background: #111; z-index: 3000; overflow-y: auto;
+            transition: width 0.8s var(--ease);
+            display: flex; flex-direction: column; justify-content: center;
+            border-left: 1px solid #333; padding: 0;
+        }
+        .contact-panel.open { width: 50vw; padding: 60px; }
+        .contact-content { min-width: 300px; width: 100%; }
+
+        input, textarea, select {
+            width: 100%; background: transparent; color: white;
+            border: none; border-bottom: 1px solid #333; padding: 15px 0;
+            font-size: 1.2rem; font-family: var(--font-body); margin-bottom: 25px;
+            resize: none;
+        }
+        input:focus, textarea:focus { outline: none; border-bottom-color: var(--accent); }
+        label { display: block; font-size: 0.8rem; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+        button.send-btn {
+            background: var(--accent); color: black; border: none; 
+            padding: 20px 40px; font-size: 1.2rem; font-weight: 800; font-family: var(--font-head);
+            width: 100%; cursor: none; margin-top: 20px; transition: transform 0.2s;
+        }
+        button.send-btn:hover { transform: scale(1.02); }
+        .close-btn { position: absolute; top: 30px; right: 30px; font-size: 2rem; color: white; cursor: none; }
+
+        /* --- UTILS --- */
+        .magnetic { display: inline-block; transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1); }
+        .scramble-text span { display: inline-block; }
+
+        @media (max-width: 900px) {
+            .hero-title { font-size: 14vw; margin-top: 50px; }
+            .hero-img-container, .grid-showcase { display: none; }
+            .about-layout { grid-template-columns: 1fr; gap: 30px; }
+            .about-pic { height: 300px; }
+            .contact-panel.open { width: 100%; padding: 30px; }
+            .page { padding: 100px 20px 20px 20px; display: block; }
+            .discount-popup { bottom: 20px; right: 20px; left: 20px; max-width: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="noise"></div>
+    <div class="cursor"></div>
+    <div class="curtain"></div>
+
+    <header>
+        <div class="logo-container magnetic hover-trigger" data-strength="30" onclick="switchPage('home')">
+            <svg class="logo-svg" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.3327 39.7647C13.3904 38.7814 10.8512 36.9909 8.96539 34.6046C5.19786 29.8366 4.54234 23.3488 7.26582 18.001L15.287 22.1016C14.366 24.3344 14.5748 26.9347 16.0739 28.8321C17.0321 30.0447 18.3346 30.9482 19.8176 31.4283L16.3327 39.7647Z" fill="#CCFF00"/>
+                <path d="M33.6673 10.2353C36.6096 11.2186 39.1488 13.0091 41.0346 15.3954C44.8021 20.1634 45.4577 26.6512 42.7342 31.999L34.713 27.8984C35.634 25.6656 35.4252 23.0653 33.9261 21.1679C32.9679 19.9553 31.6654 19.0518 30.1824 18.5717L33.6673 10.2353Z" fill="#CCFF00"/>
+                <path d="M13.6543 13.9413L22.3146 18.366L30.9749 22.7907L22.3146 27.2154L13.6543 31.6401L22.3146 27.2154L13.6543 22.7907L22.3146 18.366L13.6543 13.9413Z" fill="#CCFF00"/>
+            </svg>
+            <span class="logo-text">DCN.</span>
+        </div>
+
+        <div class="menu-btn magnetic hover-trigger" data-strength="50" onclick="toggleMenu()">MENU</div>
+    </header>
+
+    <div class="nav-overlay">
+        <a href="#" class="nav-link hover-trigger" onclick="switchPage('home')">Home</a>
+        <a href="#" class="nav-link hover-trigger" onclick="switchPage('about')">About Me</a>
+        <a href="#" class="nav-link hover-trigger" onclick="switchPage('services')">Leistungen</a>
+        <a href="#" class="nav-link hover-trigger" onclick="switchPage('reviews')">Reviews</a>
+    </div>
+
+    <div class="discount-popup" id="discountPopup">
+        <div class="discount-close hover-trigger" onclick="closePopup()">✕</div>
+        <h3 style="font-family: var(--font-head); font-size: 1.5rem; color: white; margin-bottom: 10px;">NEUKUNDEN DEAL 🔥</h3>
+        <p style="color: #aaa; margin-bottom: 15px;">Sichere dir jetzt **40-50% Rabatt**. Nur für die ersten 10 Kunden verfügbar.</p>
+        <button class="discount-btn hover-trigger" onclick="claimOffer()">Jetzt Angebot sichern!</button>
+    </div>
+
+    <div class="details-modal" id="detailsModal">
+        <div class="details-content">
+            <div class="close-btn hover-trigger" onclick="closeDetails()" style="top: 50px; right: 50px;">✕</div>
+            <h2 id="detailTitle" class="details-title">SERVICE NAME</h2>
+            <div id="detailList">
+                </div>
+            <button id="detailActionBtn" class="details-action-btn hover-trigger" onclick="proceedToContact()">JETZT ANFRAGEN</button>
+        </div>
+    </div>
+
+    <main>
+        <div id="home" class="page active">
+            <div class="page-content-wrapper">
+                <div class="hero-img-container parallax" data-speed="2">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1000" class="hero-img" alt="3D Abstract">
+                </div>
+                <div class="hero-title parallax" data-speed="1">
+                    <div class="scramble-text">DIGITAL</div>
+                    <div style="color: var(--accent)" class="scramble-text">CRAFT</div>
+                    <div class="scramble-text">NETWORK</div>
+                </div>
+                <p style="max-width: 400px; color: #888; font-size: 1.1rem; margin-bottom: 40px; position: relative; z-index: 2;">
+                    Wir bauen keine Websites. Wir bauen digitale Erlebnisse.
+                </p>
+                <div class="grid-showcase parallax" data-speed="0.5">
+                    <img src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?auto=format&fit=crop&q=80&w=300" class="grid-img hover-trigger" alt="Coding">
+                    <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=300" class="grid-img hover-trigger" alt="Keyboard">
+                </div>
+            </div>
+        </div>
+
+        <div id="about" class="page">
+            <div class="page-content-wrapper">
+                <div class="about-layout">
+                    <div class="parallax" data-speed="1">
+                        <img src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&q=80&w=800" class="about-pic hover-trigger" alt="Desk Setup">
+                    </div>
+                    <div class="about-text">
+                        <h2 class="scramble-text">THE ARCHITECT.</h2>
+                        <p>
+                            Bereits Ende 2022 habe ich angefangen Websites zu bauen.
+                            Aus Spaß wurde Leidenschaft. Innerhalb von 3,5 Jahren habe ich privat 
+                            über 50 Websites erstellt. <br><br>
+                            Ich bin jung, motiviert und technisch immer einen Schritt voraus.<br><br>
+                            DCN Agency steht für Performance ohne Kompromisse.
+                            Sie können auch eine KOSTENLOSE Demo-Website anfordern.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="services" class="page">
+            <div class="page-content-wrapper">
+                <h2 class="scramble-text" style="font-size: 6vw; font-family: var(--font-head); margin-bottom: 60px;">SERVICES</h2>
+                
+                <div class="service-row special-demo-row hover-trigger" onclick="openDetails('demo')">
+                    <h3 style="color: white;">Kostenlose Demo</h3>
+                    <div class="price-tag">
+                        <span style="color: black; background: var(--accent); padding: 5px 10px; border-radius: 4px; font-weight: bold;">GRATIS</span>
+                    </div>
+                </div>
+
+                <div class="service-row hover-trigger" onclick="openDetails('logo')">
+                    <h3>Logo Design</h3>
+                    <div class="price-tag">
+                        <span style="color: var(--accent); font-weight: bold;">25 €</span>
+                    </div>
+                </div>
+
+                <div class="service-row hover-trigger" onclick="openDetails('modern')">
+                    <h3>Moderne Website</h3>
+                    <div class="price-tag">
+                        <span style="text-decoration: line-through; color: #555; font-size: 0.9rem;">225 €</span>
+                        <span style="color: var(--accent); font-weight: bold;">120 €</span>
+                    </div>
+                </div>
+
+                <div class="service-row hover-trigger" onclick="openDetails('pro')">
+                    <h3>Professionell-Moderne Website</h3>
+                    <div class="price-tag">
+                        <span style="text-decoration: line-through; color: #555; font-size: 0.9rem;">445 €</span>
+                        <span style="color: var(--accent); font-weight: bold;">250 €</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="reviews" class="page">
+            <div class="page-content-wrapper">
+                <div class="big-rating-display parallax" data-speed="0.5">
+                    <div class="rating-number">4.9</div>
+                    <div class="rating-star-big">★</div>
+                    <div style="font-family: var(--font-body); font-size: 1.2rem; color: #888;">
+                        DURCHSCHNITT<br>AUS KUNDENBEWERTUNGEN
+                    </div>
+                </div>
+
+                <h2 class="scramble-text" style="font-size: 4rem; font-family: var(--font-head); margin-bottom: 40px;">TRUST.</h2>
+
+                <div class="reviews-grid">
+                    
+                    <div class="review-card hover-trigger">
+                        <div class="stars">★★★★★</div>
+                        <p class="review-text">
+                            "Ich finde es hat sich wirklich gelohnt, in DCN zu vertrauen. Nicht nur hatte ich innerhalb kurzer zeit eine Profesionelle Website für eine Übertrieben günsitgen preis im vergleich zu anderen agenturen. Sondern er hat es so gut hinbekommen, das ich auf der website chille wenn mir langweilig ist. 5 von 5 Sternen definitiv!"
+                        </p>
+                        <div class="review-author">Finn G. <span class="verified">✓ Verifizierter Kunde</span></div>
+                    </div>
+
+                    <div class="review-card hover-trigger">
+                        <div class="stars">★★★★½</div>
+                        <p class="review-text">
+                            "Echt klasse Arbeit. Ich wollte ein Rebranding für mein kleines Unternehmen und DCN hat genau den Nerv getroffen. Die Kommunikation war direkt und unkompliziert. Ein halber Stern Abzug nur, weil wir beim ersten Entwurf etwas aneinander vorbei geredet haben, aber die Korrektur kam super schnell. Das Endergebnis kann sich absolut sehen lassen!"
+                        </p>
+                        <div class="review-author">Joachim S. <span class="verified">✓ Verifizierter Kunde</span></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="contact-panel" id="contactPanel">
+        <div class="close-btn hover-trigger" onclick="closeContact()">✕</div>
+        <div class="contact-content">
+            <h2 style="font-family: var(--font-head); font-size: 3rem; margin-bottom: 30px; color: var(--accent);">START PROJECT</h2>
+            <form onsubmit="sendMail(event)">
+                <label>Service</label>
+                <input type="text" id="serviceInput" readonly style="color: var(--accent); font-weight: bold; border: none; padding-left: 0;">
+                <label>Name</label>
+                <input type="text" id="name" placeholder="Dein Name" required class="hover-trigger">
+                <label>E-Mail</label>
+                <input type="email" id="email" placeholder="deine@email.com" required class="hover-trigger">
+                <label>Nachricht / Adresse</label>
+                <textarea id="message" rows="3" placeholder="Adresse und Details..." required class="hover-trigger"></textarea>
+                <button type="submit" class="send-btn hover-trigger">KOSTENPFLICHTIG ANFRAGEN</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA ---
+        const serviceData = {
+            'demo': {
+                title: 'KOSTENLOSE DEMO',
+                items: [
+                    'Dein Design als Live-Preview',
+                    '10 Minuten Online verfügbar',
+                    'Perfekt zum Testen',
+                    '100% Gratis & Unverbindlich'
+                ]
+            },
+            'logo': {
+                title: 'PROFESSIONELLES LOGO',
+                items: [
+                    'Professionelles Vector-Logo',
+                    'Extrem schnelle Lieferung',
+                    'Design Änderung auf Wunsch (Kostenlos)',
+                    'Alle Dateiformate (PNG, JPG, SVG)'
+                ]
+            },
+            'modern': {
+                title: 'MODERNE WEBSITE',
+                items: [
+                    'Modernes Clean Design',
+                    'Übersichtliche Struktur',
+                    'Interaktivität (max. 3 Buttons / Taskbar)',
+                    'Kontaktseite mit Verknüpfung'
+                ]
+            },
+            'pro': {
+                title: 'PROFESSIONELL-MODERNE WEBSITE',
+                items: [
+                    'High-End Modernes Design',
+                    'Maximale Übersichtlichkeit',
+                    'Volle Interaktivität (Alle Buttons / Taskbar)',
+                    'Kontaktseite + E-Mail/Tel Verknüpfung',
+                    'Automatisches Kontaktformular (Mailto)',
+                    'Moderne Rezensionen System'
+                ]
+            }
+        };
+
+        let currentServiceKey = '';
+
+        // --- POPUP LOGIC ---
+        setTimeout(() => {
+            document.getElementById('discountPopup').classList.add('visible');
+        }, 2000);
+
+        function closePopup() {
+            document.getElementById('discountPopup').classList.remove('visible');
+        }
+
+        function claimOffer() {
+            closePopup();
+            switchPage('services');
+        }
+
+        // --- DETAILS LOGIC (FASTER REVEAL: 500ms) ---
+        const detailsModal = document.getElementById('detailsModal');
+        const detailList = document.getElementById('detailList');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailActionBtn = document.getElementById('detailActionBtn');
+
+        function openDetails(key) {
+            currentServiceKey = serviceData[key].title; 
+            detailTitle.innerText = serviceData[key].title;
+            detailList.innerHTML = ''; 
+            detailActionBtn.classList.remove('show'); 
+            
+            detailsModal.classList.add('open');
+
+            const items = serviceData[key].items;
+            
+            // Loop mit 0.5 Sekunden Verzögerung (500ms)
+            items.forEach((itemText, index) => {
+                const div = document.createElement('div');
+                div.classList.add('detail-item');
+                div.innerText = itemText;
+                detailList.appendChild(div);
+
+                setTimeout(() => {
+                    div.classList.add('show');
+                }, (index + 1) * 500); 
+            });
+
+            // Button anzeigen nachdem alle Items da sind
+            setTimeout(() => {
+                detailActionBtn.classList.add('show');
+            }, (items.length + 1) * 500);
+        }
+
+        function closeDetails() {
+            detailsModal.classList.remove('open');
+        }
+
+        function proceedToContact() {
+            closeDetails();
+            setTimeout(() => {
+                openContact(currentServiceKey);
+            }, 500);
+        }
+
+        // --- EXISTING LOGIC ---
+        const cursor = document.querySelector('.cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            document.querySelectorAll('.parallax').forEach(el => {
+                const speed = el.getAttribute('data-speed');
+                const x = (window.innerWidth - e.pageX * speed) / 100;
+                const y = (window.innerHeight - e.pageY * speed) / 100;
+                el.style.transform = `translateX(${x}px) translateY(${y}px)`;
+            });
+            document.querySelectorAll('.magnetic').forEach(btn => {
+                const rect = btn.getBoundingClientRect();
+                const strength = btn.getAttribute('data-strength');
+                const dist = Math.hypot(e.clientX - (rect.left + rect.width/2), e.clientY - (rect.top + rect.height/2));
+                if(dist < 100) {
+                    const x = (e.clientX - (rect.left + rect.width / 2)) / strength;
+                    const y = (e.clientY - (rect.top + rect.height / 2)) / strength;
+                    btn.style.transform = `translate(${x * 20}px, ${y * 20}px)`;
+                } else {
+                    btn.style.transform = `translate(0px, 0px)`;
+                }
+            });
+        });
+        document.querySelectorAll('.hover-trigger').forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('hover'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('hover'));
+        });
+
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        function startScramble(element) {
+            let iteration = 0;
+            const originalText = element.dataset.value; 
+            clearInterval(element.interval);
+            element.interval = setInterval(() => {
+                element.innerText = originalText.split("").map((letter, index) => {
+                    if(index < iteration) return originalText[index];
+                    return letters[Math.floor(Math.random() * 26)];
+                }).join("");
+                if(iteration >= originalText.length) clearInterval(element.interval);
+                iteration += 1 / 3;
+            }, 30);
+        }
+        document.querySelectorAll('.scramble-text').forEach(el => {
+            el.dataset.value = el.innerText; 
+            startScramble(el);
+            el.addEventListener('mouseover', () => startScramble(el));
+        });
+
+        const curtain = document.querySelector('.curtain');
+        const navOverlay = document.querySelector('.nav-overlay');
+        const pages = document.querySelectorAll('.page');
+        let isMenuOpen = false;
+
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            navOverlay.classList.toggle('open');
+            document.querySelector('.menu-btn').innerText = isMenuOpen ? "CLOSE" : "MENU";
+        }
+
+        // FIXED SWITCH PAGE LOGIC
+        function switchPage(pageId) {
+            if(isMenuOpen) {
+                toggleMenu(); 
+            }
+            
+            curtain.classList.add('active'); 
+            setTimeout(() => {
+                pages.forEach(p => p.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
+                document.getElementById(pageId).querySelectorAll('.scramble-text').forEach(el => startScramble(el));
+                curtain.classList.remove('active');
+                curtain.classList.add('exit');
+                setTimeout(() => curtain.classList.remove('exit'), 800);
+            }, 800);
+        }
+
+        const contactPanel = document.getElementById('contactPanel');
+        function openContact(service) {
+            document.getElementById('serviceInput').value = service;
+            contactPanel.classList.add('open');
+        }
+        function closeContact() {
+            contactPanel.classList.remove('open');
+        }
+        function sendMail(e) {
+            e.preventDefault();
+            const s = document.getElementById('serviceInput').value;
+            const n = document.getElementById('name').value;
+            const em = document.getElementById('email').value;
+            const m = document.getElementById('message').value; 
+            const recipient = "tahadurcan@gmail.com";
+            const subject = `Neue Projektanfrage: ${s}`;
+            const body = `Hallo Taha,%0D%0A%0D%0AIch habe Interesse an folgender Dienstleistung: ${s}%0D%0A%0D%0A--- MEINE DATEN ---%0D%0AName: ${n}%0D%0AEmail: ${em}%0D%0ANachricht/Adresse:%0D%0A${m}%0D%0A%0D%0ABitte um Rückmeldung.`;
+            window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+            const btn = document.querySelector('.send-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "MAIL PROGRAMM WIRD GEÖFFNET...";
+            btn.style.background = "#fff";
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "var(--accent)";
+                closeContact();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
