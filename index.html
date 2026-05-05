@@ -201,8 +201,9 @@ header{
   text-transform:uppercase;mix-blend-mode:difference;color:#fff;
 }
 .hero-title .row{display:block;overflow:hidden;}
-.hero-title .row > span{display:inline-block;transform:translateY(110%);transition:transform 1.1s var(--ease);}
-.loaded .hero-title .row > span{transform:translateY(0);}
+.hero-title .row > span{display:inline-block;transform:translateY(0);transition:transform 1.1s var(--ease);}
+.js-ready .hero-title .row > span{transform:translateY(110%);}
+.js-ready.loaded .hero-title .row > span{transform:translateY(0);}
 .hero-title .row:nth-child(1) > span{transition-delay:.2s;}
 .hero-title .row:nth-child(2) > span{transition-delay:.32s;}
 .hero-title .row:nth-child(3) > span{transition-delay:.44s;}
@@ -265,14 +266,16 @@ section{position:relative;padding:140px 50px;}
 .section-tag .num{color:var(--accent);font-family:var(--display);font-weight:700;font-size:13px;}
 .section-tag .dash{width:40px;height:1px;background:var(--muted);}
 
-.reveal{opacity:0;transform:translateY(40px);transition:opacity .9s var(--ease),transform .9s var(--ease);}
-.reveal.in{opacity:1;transform:translateY(0);}
+.reveal{opacity:1;transform:none;transition:opacity .9s var(--ease),transform .9s var(--ease);}
+.js-ready .reveal{opacity:0;transform:translateY(40px);}
+.js-ready .reveal.in{opacity:1;transform:translateY(0);}
 .reveal.d1{transition-delay:.1s;} .reveal.d2{transition-delay:.2s;}
 .reveal.d3{transition-delay:.3s;} .reveal.d4{transition-delay:.4s;}
 
 .split-line{display:block;overflow:hidden;}
-.split-line > span{display:inline-block;transform:translateY(110%);transition:transform 1s var(--ease);}
-.split-line.in > span{transform:translateY(0);}
+.split-line > span{display:inline-block;transform:none;transition:transform 1s var(--ease);}
+.js-ready .split-line > span{transform:translateY(110%);}
+.js-ready .split-line.in > span{transform:translateY(0);}
 
 /* ============================================================
    ABOUT / MANIFESTO
@@ -1055,22 +1058,28 @@ let currentServiceKey = '';
 /* ============================================================
    LOADER
 ============================================================ */
+document.documentElement.classList.add('js-ready');
+document.body.classList.add('js-ready');
 const loader = document.getElementById('loader');
 const loaderCount = document.getElementById('loaderCount');
-let lp = 0;
-requestAnimationFrame(() => loader.classList.add('in'));
+let lp = 0, loadDone = false;
+requestAnimationFrame(() => loader && loader.classList.add('in'));
 const loadInt = setInterval(() => {
-  lp += Math.random() * 6 + 2;
+  lp += Math.random() * 6 + 4;
   if (lp >= 100) { lp = 100; clearInterval(loadInt); finishLoad(); }
-  loaderCount.textContent = String(Math.floor(lp)).padStart(3, '0');
-}, 60);
+  if (loaderCount) loaderCount.textContent = String(Math.floor(lp)).padStart(3, '0');
+}, 50);
 function finishLoad() {
+  if (loadDone) return; loadDone = true;
   setTimeout(() => {
-    loader.classList.add('gone');
+    if (loader) loader.classList.add('gone');
     document.body.classList.add('loaded');
-    setTimeout(() => loader.remove(), 1300);
-  }, 350);
+    setTimeout(() => { if (loader && loader.parentNode) loader.remove(); }, 1300);
+  }, 250);
 }
+// SAFETY: never let the loader trap the page
+setTimeout(finishLoad, 3500);
+window.addEventListener('error', finishLoad);
 
 /* ============================================================
    CURSOR
@@ -1107,7 +1116,12 @@ bindHover();
 ============================================================ */
 (function initHero() {
   const mount = document.getElementById('heroCanvas');
-  if (!mount || !window.THREE) return;
+  if (!mount) return;
+  if (!window.THREE) {
+    mount.style.background = "radial-gradient(circle at 70% 50%, rgba(204,255,0,0.18), transparent 55%)";
+    return;
+  }
+  try {
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(45, mount.clientWidth / mount.clientHeight, 0.1, 100);
@@ -1265,6 +1279,10 @@ bindHover();
     camera.updateProjectionMatrix();
     renderer.setSize(mount.clientWidth, mount.clientHeight);
   });
+  } catch (err) {
+    console.warn('Hero WebGL failed:', err);
+    mount.style.background = "radial-gradient(circle at 70% 50%, rgba(204,255,0,0.18), transparent 55%)";
+  }
 })();
 
 /* ============================================================
