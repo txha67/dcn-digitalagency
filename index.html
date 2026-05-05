@@ -124,8 +124,8 @@ body.c-drag .cursor-ring{width:120px;height:120px;border-color:var(--accent);bac
 ============================================================ */
 header{
   position:fixed;top:0;left:0;width:100%;z-index:500;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:28px 50px;
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:30px;
+  padding:22px 40px;
   mix-blend-mode:difference;
 }
 .logo{
@@ -137,17 +137,27 @@ header{
 .logo-text-wrap span{display:inline-block;}
 .logo .dot{color:var(--accent);}
 
-.nav-meta{
-  display:flex;align-items:center;gap:30px;font-size:12px;
-  letter-spacing:1.5px;text-transform:uppercase;color:#fff;
+/* HEADER SECTION INDEX (taskbar) */
+.header-index{
+  display:flex;align-items:center;justify-content:center;gap:4px;
+  padding:7px;border:1px solid rgba(255,255,255,.12);border-radius:100px;
+  background:rgba(10,10,10,.4);backdrop-filter:blur(12px);
+  font-family:var(--display);font-weight:600;
 }
-.nav-link{position:relative;padding:8px 0;transition:opacity .3s;}
-.nav-link::after{
-  content:"";position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--accent);
-  transition:width .4s var(--ease);
+.hidx{
+  position:relative;display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:100px;font-size:11px;letter-spacing:1.5px;
+  text-transform:uppercase;color:rgba(255,255,255,.55);
+  transition:color .35s var(--ease),background .35s var(--ease),padding .35s var(--ease);
 }
-.nav-link:hover::after{width:100%;}
+.hidx .num{font-size:9px;color:rgba(255,255,255,.35);font-variant-numeric:tabular-nums;letter-spacing:.5px;}
+.hidx:hover{color:#fff;}
+.hidx.active{background:var(--accent);color:#000;padding:7px 18px;}
+.hidx.active .num{color:#000;}
+.hidx .label{display:inline-block;}
+
 .nav-cta{
+  font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;
   display:inline-flex;align-items:center;gap:10px;padding:12px 22px;
   border:1px solid rgba(255,255,255,.3);border-radius:100px;font-weight:500;
   transition:all .35s var(--ease);
@@ -169,15 +179,41 @@ header{
   transition:width .1s linear;
 }
 
-/* SIDE INDEX */
-.side-index{
-  position:fixed;left:30px;top:50%;transform:translateY(-50%);z-index:300;
-  display:flex;flex-direction:column;gap:14px;
-  writing-mode:vertical-rl;font-size:10px;letter-spacing:3px;text-transform:uppercase;
-  color:var(--muted);mix-blend-mode:difference;
+/* CURSOR TRAIL */
+.cursor-trail{
+  position:fixed;top:0;left:0;width:5px;height:5px;border-radius:50%;
+  background:var(--accent);transform:translate(-50%,-50%);
+  pointer-events:none;z-index:9997;mix-blend-mode:screen;
 }
-.side-index .item{padding:6px 0;transition:color .3s,padding .3s;cursor:none;}
-.side-index .item.active{color:var(--accent);padding-left:8px;}
+/* CLICK BURST PARTICLES */
+.click-particle{
+  position:fixed;width:6px;height:6px;border-radius:50%;
+  background:var(--accent);transform:translate(-50%,-50%);
+  pointer-events:none;z-index:9996;will-change:transform,opacity;
+  box-shadow:0 0 8px rgba(204,255,0,.8);
+}
+
+/* DOT GRID BG */
+.dot-grid{
+  position:absolute;inset:0;pointer-events:none;opacity:.4;
+  background-image:radial-gradient(rgba(255,255,255,.1) 1px,transparent 1px);
+  background-size:36px 36px;
+  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 75%);
+}
+
+/* GLITCH HOVER */
+.glitch{position:relative;display:inline-block;}
+.glitch:hover::before,.glitch:hover::after{
+  content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%;
+}
+.glitch:hover::before{color:var(--accent);transform:translate(-2px,-1px);clip-path:polygon(0 0,100% 0,100% 45%,0 45%);}
+.glitch:hover::after{color:#ff00aa;transform:translate(2px,1px);clip-path:polygon(0 55%,100% 55%,100% 100%,0 100%);}
+
+/* TILT CARDS */
+.tilt{transform-style:preserve-3d;transition:transform .8s var(--ease);will-change:transform;}
+.tilt-inner{transform-style:preserve-3d;}
+.tilt-layer{transform:translateZ(30px);transition:transform .4s var(--ease);}
 
 /* ============================================================
    HERO
@@ -259,6 +295,7 @@ header{
    SECTION BASE
 ============================================================ */
 section{position:relative;padding:140px 50px;}
+section > *:not(.dot-grid){position:relative;z-index:1;}
 .section-tag{
   display:flex;align-items:center;gap:14px;font-size:11px;letter-spacing:2.5px;
   text-transform:uppercase;color:var(--muted);margin-bottom:60px;
@@ -593,11 +630,10 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
 ============================================================ */
 @media (max-width:980px){
   *{cursor:auto!important;}
-  .cursor-dot,.cursor-ring,.cursor-text,.service-preview,.side-index,.scanline{display:none;}
-  header{padding:20px 24px;}
-  .nav-meta{gap:14px;}
-  .nav-link{display:none;}
-  .nav-cta{padding:10px 16px;font-size:11px;}
+  .cursor-dot,.cursor-ring,.cursor-text,.service-preview,.cursor-trail,.scanline{display:none;}
+  header{padding:14px 16px;grid-template-columns:auto auto;gap:14px;}
+  .header-index{display:none;}
+  .nav-cta{padding:10px 14px;font-size:10px;}
   section{padding:90px 24px;}
   .hero{padding:24px;}
   .hero-eyebrow{top:90px;left:24px;}
@@ -658,24 +694,16 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
     </svg>
     <div class="logo-text-wrap"><span>D</span><span>C</span><span>N</span><span class="dot">.</span></div>
   </a>
-  <nav class="nav-meta">
-    <a class="nav-link hover-trigger" data-scroll="about">Über</a>
-    <a class="nav-link hover-trigger" data-scroll="services">Services</a>
-    <a class="nav-link hover-trigger" data-scroll="process">Prozess</a>
-    <a class="nav-link hover-trigger" data-scroll="reviews">Reviews</a>
-    <a class="nav-cta hover-trigger" onclick="openContact('Allgemeine Anfrage')"><span class="pulse"></span> Projekt starten</a>
+  <nav class="header-index" id="headerIndex">
+    <a class="hidx active hover-trigger" data-target="hero"><span class="num">01</span><span class="label">Index</span></a>
+    <a class="hidx hover-trigger" data-target="about"><span class="num">02</span><span class="label">Studio</span></a>
+    <a class="hidx hover-trigger" data-target="services"><span class="num">03</span><span class="label">Services</span></a>
+    <a class="hidx hover-trigger" data-target="process"><span class="num">04</span><span class="label">Prozess</span></a>
+    <a class="hidx hover-trigger" data-target="reviews"><span class="num">05</span><span class="label">Trust</span></a>
+    <a class="hidx hover-trigger" data-target="cta"><span class="num">06</span><span class="label">Contact</span></a>
   </nav>
+  <a class="nav-cta hover-trigger" onclick="openContact('Allgemeine Anfrage')"><span class="pulse"></span> Projekt starten</a>
 </header>
-
-<!-- SIDE INDEX -->
-<div class="side-index" id="sideIndex">
-  <div class="item active" data-target="hero">01 — Index</div>
-  <div class="item" data-target="about">02 — Studio</div>
-  <div class="item" data-target="services">03 — Services</div>
-  <div class="item" data-target="process">04 — Prozess</div>
-  <div class="item" data-target="reviews">05 — Trust</div>
-  <div class="item" data-target="cta">06 — Contact</div>
-</div>
 
 <!-- SERVICE PREVIEW -->
 <div class="service-preview" id="servicePreview">
@@ -739,6 +767,7 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
 
   <!-- ABOUT -->
   <section id="about" data-section="about">
+    <div class="dot-grid"></div>
     <div class="section-tag reveal"><span class="num">02</span><span class="dash"></span><span>Studio / Manifesto</span></div>
     <div class="about">
       <div>
@@ -762,9 +791,9 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
       </div>
     </div>
     <div class="about-stats reveal d2">
-      <div class="stat"><div class="num">50<em>+</em></div><div class="label">Ausgelieferte Projekte</div></div>
-      <div class="stat"><div class="num">3.5<em>y</em></div><div class="label">Erfahrung im Craft</div></div>
-      <div class="stat"><div class="num">4.9<em>★</em></div><div class="label">Durchschnittsbewertung</div></div>
+      <div class="stat"><div class="num"><span class="count" data-to="50" data-decimals="0">0</span><em>+</em></div><div class="label">Ausgelieferte Projekte</div></div>
+      <div class="stat"><div class="num"><span class="count" data-to="3.5" data-decimals="1">0</span><em>y</em></div><div class="label">Erfahrung im Craft</div></div>
+      <div class="stat"><div class="num"><span class="count" data-to="4.9" data-decimals="1">0</span><em>★</em></div><div class="label">Durchschnittsbewertung</div></div>
     </div>
   </section>
 
@@ -832,28 +861,28 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
     </div>
 
     <div class="process-grid">
-      <div class="process-step reveal">
+      <div class="process-step tilt reveal">
         <div class="num">01 — Discovery</div>
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <h4>Wir <em>hören</em> zu.</h4>
+        <svg class="icon tilt-layer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <h4 class="tilt-layer">Wir <em>hören</em> zu.</h4>
         <p>Kick-off-Call. Wir verstehen deine Marke, dein Publikum und das Ziel. Keine Templates. Kein Bullshit.</p>
       </div>
-      <div class="process-step reveal d1">
+      <div class="process-step tilt reveal d1">
         <div class="num">02 — Design</div>
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
-        <h4>Pixel <em>perfect.</em></h4>
+        <svg class="icon tilt-layer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+        <h4 class="tilt-layer">Pixel <em>perfect.</em></h4>
         <p>Custom Design — Typo, Grid, Motion. Keine Themes. Jede Komponente individuell für deine Marke.</p>
       </div>
-      <div class="process-step reveal d2">
+      <div class="process-step tilt reveal d2">
         <div class="num">03 — Build</div>
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        <h4>Code, <em>handcrafted.</em></h4>
+        <svg class="icon tilt-layer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <h4 class="tilt-layer">Code, <em>handcrafted.</em></h4>
         <p>Sauberer Code. Lighthouse 95+. Animations, die nicht ruckeln. Optimiert für jedes Device.</p>
       </div>
-      <div class="process-step reveal d3">
+      <div class="process-step tilt reveal d3">
         <div class="num">04 — Launch</div>
-        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/></svg>
-        <h4>Go <em>live.</em></h4>
+        <svg class="icon tilt-layer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/></svg>
+        <h4 class="tilt-layer">Go <em>live.</em></h4>
         <p>Deploy, Übergabe und Support. Du bekommst Schulung, Dokumentation und einen direkten Draht zu mir.</p>
       </div>
     </div>
@@ -876,8 +905,8 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
     </div>
 
     <div class="reviews-grid">
-      <div class="review-card reveal">
-        <div class="quote">"</div>
+      <div class="review-card tilt reveal">
+        <div class="quote tilt-layer">"</div>
         <div class="stars">★★★★★</div>
         <p class="text">Ich finde es hat sich wirklich gelohnt, in DCN zu vertrauen. Nicht nur hatte ich innerhalb kurzer Zeit eine professionelle Website für einen übertrieben günstigen Preis im Vergleich zu anderen Agenturen. Sondern er hat es so gut hingekommen, dass ich auf der Website chille, wenn mir langweilig ist. 5 von 5 Sternen definitiv!</p>
         <div class="author-row">
@@ -886,8 +915,8 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
         </div>
       </div>
 
-      <div class="review-card reveal d1">
-        <div class="quote">"</div>
+      <div class="review-card tilt reveal d1">
+        <div class="quote tilt-layer">"</div>
         <div class="stars">★★★★½</div>
         <p class="text">Echt klasse Arbeit. Ich wollte ein Rebranding für mein kleines Unternehmen und DCN hat genau den Nerv getroffen. Die Kommunikation war direkt und unkompliziert. Ein halber Stern Abzug nur, weil wir beim ersten Entwurf etwas aneinander vorbei geredet haben, aber die Korrektur kam super schnell. Das Endergebnis kann sich absolut sehen lassen!</p>
         <div class="author-row">
@@ -900,6 +929,7 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
 
   <!-- CTA -->
   <section class="cta" id="cta" data-section="cta">
+    <div class="dot-grid"></div>
     <div class="cta-glow"></div>
     <div class="cta-eyebrow reveal">Ready when you are</div>
     <h2 class="cta-title reveal d1">
@@ -1082,7 +1112,7 @@ setTimeout(finishLoad, 3500);
 window.addEventListener('error', finishLoad);
 
 /* ============================================================
-   CURSOR
+   CURSOR + TRAIL
 ============================================================ */
 const cdot = document.querySelector('.cursor-dot');
 const cring = document.querySelector('.cursor-ring');
@@ -1090,14 +1120,149 @@ const ctext = document.querySelector('.cursor-text');
 let mx = window.innerWidth / 2, my = window.innerHeight / 2;
 let rx = mx, ry = my;
 window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+// trail dots
+const TRAIL_N = 8;
+const trail = [];
+for (let i = 0; i < TRAIL_N; i++) {
+  const d = document.createElement('div');
+  d.className = 'cursor-trail';
+  d.style.opacity = (1 - i / TRAIL_N) * 0.55;
+  d.style.width = d.style.height = (5 - i * 0.4) + 'px';
+  document.body.appendChild(d);
+  trail.push({ el: d, x: mx, y: my });
+}
+
 function animateCursor() {
   rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
   cdot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
   cring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
   ctext.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+
+  let prevX = mx, prevY = my;
+  trail.forEach((t, i) => {
+    t.x += (prevX - t.x) * (0.35 - i * 0.025);
+    t.y += (prevY - t.y) * (0.35 - i * 0.025);
+    t.el.style.transform = `translate(${t.x}px,${t.y}px) translate(-50%,-50%)`;
+    prevX = t.x; prevY = t.y;
+  });
   requestAnimationFrame(animateCursor);
 }
 animateCursor();
+
+/* ============================================================
+   CLICK BURST PARTICLES
+============================================================ */
+window.addEventListener('mousedown', e => {
+  const N = 14;
+  for (let i = 0; i < N; i++) {
+    const p = document.createElement('div');
+    p.className = 'click-particle';
+    p.style.left = e.clientX + 'px';
+    p.style.top = e.clientY + 'px';
+    document.body.appendChild(p);
+    const angle = (i / N) * Math.PI * 2 + Math.random() * 0.4;
+    const dist = 50 + Math.random() * 80;
+    const dur = 600 + Math.random() * 400;
+    p.animate([
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist}px)) scale(0)`, opacity: 0 }
+    ], { duration: dur, easing: 'cubic-bezier(0.19,1,0.22,1)' }).onfinish = () => p.remove();
+  }
+  // ping the hero blob
+  if (window.__heroPulse) window.__heroPulse();
+});
+
+/* ============================================================
+   3D TILT CARDS
+============================================================ */
+document.querySelectorAll('.tilt').forEach(card => {
+  let raf;
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(() => {
+      card.style.transform = `perspective(1000px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg) translateZ(0)`;
+    });
+  });
+  card.addEventListener('mouseleave', () => {
+    cancelAnimationFrame(raf);
+    card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0)';
+  });
+});
+
+/* ============================================================
+   MAGNETIC ELEMENTS
+============================================================ */
+document.querySelectorAll('.cta-btn, .nav-cta, .arrow').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    el.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px)`;
+  });
+  el.addEventListener('mouseleave', () => {
+    el.style.transform = 'translate(0,0)';
+  });
+});
+
+/* ============================================================
+   LETTER SCRAMBLE
+============================================================ */
+const SCRAMBLE_CHARS = "!@#$%^&*()_+-=<>?/ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+function scrambleHover(el) {
+  const text = el.dataset.text || el.textContent;
+  el.dataset.text = text;
+  el.addEventListener('mouseenter', () => {
+    if (el.__scrambleRunning) return;
+    el.__scrambleRunning = true;
+    let frame = 0;
+    const totalFrames = 18;
+    clearInterval(el.__scrambleInt);
+    el.__scrambleInt = setInterval(() => {
+      const progress = frame / totalFrames;
+      el.textContent = text.split('').map((ch, i) => {
+        if (ch === ' ') return ' ';
+        if (i < progress * text.length) return text[i];
+        return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+      }).join('');
+      if (frame >= totalFrames) {
+        clearInterval(el.__scrambleInt);
+        el.textContent = text;
+        el.__scrambleRunning = false;
+      }
+      frame++;
+    }, 28);
+  });
+}
+document.querySelectorAll('.hidx .label, .nav-cta').forEach(scrambleHover);
+
+/* ============================================================
+   NUMBER COUNTERS
+============================================================ */
+const countObs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting || entry.target.__counted) return;
+    entry.target.__counted = true;
+    const el = entry.target;
+    const target = parseFloat(el.dataset.to);
+    const decimals = parseInt(el.dataset.decimals) || 0;
+    const dur = 1800;
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const val = eased * target;
+      el.textContent = val.toFixed(decimals);
+      if (t < 1) requestAnimationFrame(tick);
+      else el.textContent = target.toFixed(decimals);
+    }
+    requestAnimationFrame(tick);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.count').forEach(el => countObs.observe(el));
 
 /* ============================================================
    HOVER TRIGGERS
@@ -1251,6 +1416,10 @@ bindHover();
   let scrollY = 0;
   window.addEventListener('scroll', () => { scrollY = window.scrollY; });
 
+  // pulse spike triggered from click events
+  let pulse = 0;
+  window.__heroPulse = () => { pulse = 0.5; };
+
   const clock = new THREE.Clock();
   function animate() {
     const t = clock.getElapsedTime();
@@ -1264,10 +1433,11 @@ bindHover();
     points.rotation.y += 0.0008;
     points.rotation.x += 0.0003;
 
-    // intensity reacts to scroll within hero
+    // intensity reacts to scroll within hero + click pulse
     const heroH = window.innerHeight;
     const t2 = Math.max(0, 1 - scrollY / heroH);
-    uniforms.uIntensity.value = 0.25 + t2 * 0.18 + Math.sin(t * 0.6) * 0.04;
+    pulse *= 0.92;
+    uniforms.uIntensity.value = 0.25 + t2 * 0.18 + Math.sin(t * 0.6) * 0.04 + pulse;
 
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
@@ -1295,7 +1465,7 @@ const io = new IntersectionObserver((entries) => {
 reveals.forEach(r => io.observe(r));
 
 const progressEl = document.getElementById('scrollProgress');
-const sideItems = document.querySelectorAll('.side-index .item');
+const headerItems = document.querySelectorAll('.header-index .hidx');
 const sections = document.querySelectorAll('[data-section]');
 window.addEventListener('scroll', () => {
   const total = document.documentElement.scrollHeight - window.innerHeight;
@@ -1307,7 +1477,7 @@ window.addEventListener('scroll', () => {
     const r = s.getBoundingClientRect();
     if (r.top < window.innerHeight * 0.45) active = s.dataset.section;
   });
-  sideItems.forEach(i => i.classList.toggle('active', i.dataset.target === active));
+  headerItems.forEach(i => i.classList.toggle('active', i.dataset.target === active));
 });
 
 /* ============================================================
@@ -1320,7 +1490,7 @@ document.querySelectorAll('[data-scroll]').forEach(el => {
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 });
-sideItems.forEach(item => {
+headerItems.forEach(item => {
   item.addEventListener('click', () => {
     const target = document.getElementById(item.dataset.target);
     if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
