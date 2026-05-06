@@ -173,13 +173,52 @@ header{
   100%{box-shadow:0 0 0 0 rgba(204,255,0,0);}
 }
 
-/* SCROLL PROGRESS */
-.scroll-progress{
-  position:fixed;top:0;left:0;height:2px;width:0%;background:var(--accent);z-index:600;
-  transition:width .1s linear;
-}
+/* SCROLL PROGRESS — hidden in multi-page mode */
+.scroll-progress{display:none;}
 
-/* CURSOR TRAIL */
+/* ============================================================
+   PAGE SYSTEM
+============================================================ */
+.page-stack{position:relative;width:100%;height:100vh;}
+.page{
+  position:fixed;top:0;left:0;width:100%;height:100vh;
+  overflow-y:auto;overflow-x:hidden;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .5s var(--ease),visibility 0s .5s;
+  scrollbar-width:thin;scrollbar-color:rgba(204,255,0,.3) transparent;
+}
+.page::-webkit-scrollbar{width:6px;}
+.page::-webkit-scrollbar-track{background:transparent;}
+.page::-webkit-scrollbar-thumb{background:rgba(204,255,0,.3);border-radius:100px;}
+.page.active{opacity:1;visibility:visible;pointer-events:all;transition-delay:0s;}
+
+/* CURTAIN */
+.curtain{
+  position:fixed;inset:0;z-index:6500;background:var(--accent);
+  transform:translateY(100%);
+  transition:transform .7s cubic-bezier(0.83,0,0.17,1);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:800;color:#000;
+  font-size:clamp(40px,8vw,140px);letter-spacing:-.04em;line-height:1;
+  text-transform:uppercase;
+}
+.curtain.active{transform:translateY(0);}
+.curtain.exit{transform:translateY(-100%);transition-duration:.85s;}
+.curtain.no-anim{transition:none!important;}
+.curtain-text{opacity:0;transform:translateY(20px);transition:opacity .4s,transform .5s;}
+.curtain.active .curtain-text{opacity:1;transform:translateY(0);transition-delay:.25s;}
+
+/* PAGE COUNTER */
+.page-counter{
+  position:fixed;bottom:24px;left:30px;z-index:400;mix-blend-mode:difference;
+  font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:2px;
+  text-transform:uppercase;color:#fff;display:flex;gap:8px;align-items:center;
+}
+.page-counter .now{color:var(--accent);font-size:14px;}
+.page-counter .total{color:rgba(255,255,255,.4);}
+.page-counter .pg-name{color:rgba(255,255,255,.6);margin-left:14px;border-left:1px solid rgba(255,255,255,.2);padding-left:14px;}
+
+
 .cursor-trail{
   position:fixed;top:0;left:0;width:5px;height:5px;border-radius:50%;
   background:var(--accent);transform:translate(-50%,-50%);
@@ -604,6 +643,24 @@ section > *:not(.dot-grid){position:relative;z-index:1;}
 .review-card .author{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.5px;}
 .review-card .verified{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:6px;}
 
+.trust-band{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:80px;
+  background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+}
+.trust-item{
+  background:#0E0E0E;padding:34px 26px;display:flex;flex-direction:column;gap:6px;
+  transition:background .3s;
+}
+.trust-item:hover{background:#161616;}
+.trust-item .trust-num{font-family:var(--display);font-weight:700;font-size:48px;line-height:1;letter-spacing:-.02em;}
+.trust-item .trust-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+
+.reviews-cta{
+  margin-top:60px;padding:50px;border:1px solid var(--line);border-radius:18px;
+  background:linear-gradient(135deg,rgba(204,255,0,.04),rgba(0,0,0,0));
+  display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap;
+}
+
 /* ============================================================
    CTA
 ============================================================ */
@@ -740,26 +797,89 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
 .modal-action:hover{transform:scale(1.02);}
 
 /* ============================================================
-   CONTACT PANEL — MULTI STEP
+   PROJECT DETAIL MODAL
+============================================================ */
+.proj-modal{
+  position:fixed;inset:0;z-index:750;background:rgba(5,5,5,.95);backdrop-filter:blur(12px);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .5s var(--ease),visibility 0s .5s;
+  display:flex;align-items:center;justify-content:center;padding:40px;
+}
+.proj-modal.open{opacity:1;visibility:visible;pointer-events:all;transition-delay:0s;}
+.proj-modal-content{
+  width:100%;max-width:1100px;max-height:90vh;overflow-y:auto;
+  background:linear-gradient(180deg,#0F0F0F,#080808);
+  border:1px solid var(--line);border-radius:18px;
+  display:grid;grid-template-columns:1fr 1fr;
+  transform:translateY(40px) scale(.96);transition:transform .7s var(--ease);
+  position:relative;
+}
+.proj-modal.open .proj-modal-content{transform:translateY(0) scale(1);}
+.proj-modal-img{
+  background-size:cover;background-position:center;min-height:560px;border-radius:18px 0 0 18px;
+  position:relative;overflow:hidden;
+}
+.proj-modal-img::after{
+  content:"";position:absolute;inset:0;background:linear-gradient(135deg,transparent 50%,rgba(0,0,0,.5));
+}
+.proj-modal-info{padding:48px;display:flex;flex-direction:column;gap:18px;position:relative;}
+.proj-modal-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:10px;}
+.proj-modal-eyebrow::before{content:"";width:24px;height:1px;background:var(--accent);}
+.proj-modal-title{font-family:var(--display);font-weight:700;font-size:48px;line-height:.95;letter-spacing:-.02em;text-transform:uppercase;}
+.proj-modal-title em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);text-transform:none;}
+.proj-modal-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.proj-modal-meta .acc{color:var(--accent);}
+.proj-modal-desc{font-size:15px;color:#cfcfca;line-height:1.7;}
+.proj-modal-stack{display:flex;flex-wrap:wrap;gap:6px;}
+.proj-modal-stack .chip{padding:6px 12px;border:1px solid var(--line);border-radius:100px;font-size:11px;letter-spacing:1px;color:var(--text);}
+.proj-modal-actions{display:flex;gap:10px;margin-top:auto;padding-top:24px;}
+.proj-modal-action{
+  flex:1;padding:18px;border:none;border-radius:100px;font-family:var(--display);font-weight:700;
+  font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:10px;transition:all .3s var(--ease);
+}
+.proj-modal-action.primary{background:var(--accent);color:#000;}
+.proj-modal-action.primary:hover{transform:scale(1.02);}
+.proj-modal-action.secondary{background:transparent;border:1px solid var(--line);color:var(--text);flex:0 0 auto;padding:18px 24px;}
+.proj-modal-action.secondary:hover{border-color:var(--accent);color:var(--accent);}
+.proj-modal-close{
+  position:absolute;top:24px;right:24px;width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:14px;transition:all .3s;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:5;
+}
+.proj-modal-close:hover{background:var(--accent);color:#000;border-color:var(--accent);transform:rotate(90deg);}
+
+/* ============================================================
+   CONTACT PANEL — FULL SCREEN, MULTI STEP, 3D BG
 ============================================================ */
 .contact-panel{
-  position:fixed;top:0;right:0;height:100vh;width:0;background:linear-gradient(180deg,#0F0F0F,#080808);z-index:800;
-  border-left:1px solid var(--line);overflow:hidden;
-  transition:width .9s var(--ease);
-  display:flex;flex-direction:column;
+  position:fixed;inset:0;z-index:800;
+  background:linear-gradient(180deg,#0F0F0F,#050505);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .6s var(--ease),visibility 0s .6s;
+  display:flex;flex-direction:column;overflow:hidden;
 }
-.contact-panel.open{width:min(620px,100vw);}
+.contact-panel.open{opacity:1;visibility:visible;pointer-events:all;transition-delay:0s;}
+.contact-canvas{position:absolute;inset:0;z-index:0;opacity:.6;}
+.contact-canvas canvas{display:block;width:100%!important;height:100%!important;}
 .contact-bg{
-  position:absolute;inset:0;pointer-events:none;
-  background-image:radial-gradient(circle at top right,rgba(204,255,0,.08),transparent 50%),radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);
-  background-size:auto, 28px 28px;
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  background-image:radial-gradient(circle at 80% 20%,rgba(204,255,0,.1),transparent 50%),radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:auto, 32px 32px;
+  mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%);
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 30%,transparent 80%);
 }
-.contact-bg::after{
-  content:"";position:absolute;top:-100px;right:-100px;width:300px;height:300px;border-radius:50%;
-  background:radial-gradient(circle,rgba(204,255,0,.18),transparent 70%);
-  animation:glowFloat 8s ease-in-out infinite;
+.contact-inner{
+  position:relative;z-index:2;padding:90px 60px 40px;width:100%;max-width:720px;margin:0 auto;
+  display:flex;flex-direction:column;height:100%;overflow-y:auto;
 }
-.contact-inner{padding:60px 60px 40px;width:100%;display:flex;flex-direction:column;height:100%;position:relative;z-index:2;}
+.contact-side-headline{
+  position:absolute;top:50%;left:60px;transform:translateY(-50%);z-index:2;
+  font-family:var(--display);font-weight:700;font-size:clamp(60px,8vw,140px);
+  line-height:.85;letter-spacing:-.04em;text-transform:uppercase;
+  pointer-events:none;mix-blend-mode:difference;color:#fff;opacity:.08;
+}
+.contact-side-headline em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);text-transform:none;}
 .contact-close{
   position:absolute;top:24px;right:24px;width:42px;height:42px;border-radius:50%;
   border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
@@ -907,8 +1027,18 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
   .process-track{margin-top:40px;}
   .process-line{display:none;}
   .svc-grid{grid-template-columns:1fr;}
-  .contact-inner{padding:60px 24px 30px;}
+  .svc-grid .svc-card[style*="span 2"]{grid-column:span 1!important;}
+  .contact-inner{padding:80px 22px 30px;}
   .contact-title{font-size:36px;}
+  .contact-side-headline{display:none;}
+  .proj-modal{padding:18px;}
+  .proj-modal-content{grid-template-columns:1fr;max-height:92vh;}
+  .proj-modal-img{min-height:240px;border-radius:18px 18px 0 0;}
+  .proj-modal-info{padding:30px 24px;}
+  .proj-modal-title{font-size:32px;}
+  .trust-band{grid-template-columns:repeat(2,1fr);}
+  .reviews-cta{padding:30px;flex-direction:column;align-items:flex-start;}
+  .page-counter{display:none;}
   section{padding:90px 24px;}
   .hero{padding:24px;}
   .hero-eyebrow{top:90px;left:24px;}
@@ -944,6 +1074,19 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
 <div class="cursor-ring"></div>
 <div class="cursor-text">VIEW</div>
 
+<!-- CURTAIN -->
+<div class="curtain" id="curtain">
+  <span class="curtain-text" id="curtainText">DCN.</span>
+</div>
+
+<!-- PAGE COUNTER -->
+<div class="page-counter" id="pageCounter">
+  <span class="now" id="pgNow">01</span>
+  <span>/</span>
+  <span class="total">07</span>
+  <span class="pg-name" id="pgName">Index</span>
+</div>
+
 <!-- LOADER -->
 <div class="loader" id="loader">
   <div class="loader-mark">
@@ -961,7 +1104,7 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
 
 <!-- HEADER -->
 <header>
-  <a href="#hero" class="logo hover-trigger" data-scroll="hero">
+  <a href="#hero" class="logo hover-trigger" onclick="event.preventDefault(); switchPage('home')">
     <svg viewBox="0 0 50 50" fill="none">
       <path d="M16.3 39.8C13.4 38.8 10.9 37 9 34.6C5.2 29.8 4.5 23.3 7.3 18L15.3 22.1C14.4 24.3 14.6 26.9 16.1 28.8C17 30 18.3 30.9 19.8 31.4L16.3 39.8Z" fill="#CCFF00"/>
       <path d="M33.7 10.2C36.6 11.2 39.1 13 41 15.4C44.8 20.2 45.5 26.7 42.7 32L34.7 27.9C35.6 25.7 35.4 23.1 33.9 21.2C33 20 31.7 19.1 30.2 18.6L33.7 10.2Z" fill="#CCFF00"/>
@@ -970,15 +1113,15 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
     <div class="logo-text-wrap"><span>D</span><span>C</span><span>N</span><span class="dot">.</span></div>
   </a>
   <nav class="header-index" id="headerIndex">
-    <a class="hidx active hover-trigger" data-target="hero"><span class="num">01</span><span class="label">Index</span></a>
-    <a class="hidx hover-trigger" data-target="about"><span class="num">02</span><span class="label">Studio</span></a>
-    <a class="hidx hover-trigger" data-target="work"><span class="num">03</span><span class="label">Work</span></a>
-    <a class="hidx hover-trigger" data-target="services"><span class="num">04</span><span class="label">Services</span></a>
-    <a class="hidx hover-trigger" data-target="process"><span class="num">05</span><span class="label">Prozess</span></a>
-    <a class="hidx hover-trigger" data-target="reviews"><span class="num">06</span><span class="label">Trust</span></a>
-    <a class="hidx hover-trigger" data-target="cta"><span class="num">07</span><span class="label">Contact</span></a>
+    <a class="hidx active hover-trigger" data-page="home"><span class="num">01</span><span class="label">Index</span></a>
+    <a class="hidx hover-trigger" data-page="about"><span class="num">02</span><span class="label">Studio</span></a>
+    <a class="hidx hover-trigger" data-page="work"><span class="num">03</span><span class="label">Work</span></a>
+    <a class="hidx hover-trigger" data-page="services"><span class="num">04</span><span class="label">Services</span></a>
+    <a class="hidx hover-trigger" data-page="process"><span class="num">05</span><span class="label">Prozess</span></a>
+    <a class="hidx hover-trigger" data-page="reviews"><span class="num">06</span><span class="label">Trust</span></a>
+    <a class="hidx hover-trigger" data-page="contact"><span class="num">07</span><span class="label">Contact</span></a>
   </nav>
-  <a class="nav-cta hover-trigger" onclick="openContact('Allgemeine Anfrage')"><span class="pulse"></span> Projekt starten</a>
+  <a class="nav-cta hover-trigger" onclick="switchPage('contact')"><span class="pulse"></span> Projekt starten</a>
 </header>
 
 <!-- SERVICE PREVIEW -->
@@ -987,7 +1130,9 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
   <div class="service-preview-label" id="servicePreviewLabel"></div>
 </div>
 
-<main class="scroll-wrap">
+<main class="page-stack">
+
+<div class="page active" id="page-home" data-page="home">
 
   <!-- HERO -->
   <section class="hero" id="hero" data-section="hero">
@@ -1041,6 +1186,41 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
     </div>
   </div>
 
+  <!-- FOOTER -->
+  <footer id="globalFooter">
+    <div class="foot-top">
+      <div class="foot-mark">DCN<span class="dot">.</span></div>
+      <div class="foot-col">
+        <h5>Navigation</h5>
+        <ul>
+          <li><a class="hover-trigger" onclick="switchPage('home')">Home</a></li>
+          <li><a class="hover-trigger" onclick="switchPage('about')">Über</a></li>
+          <li><a class="hover-trigger" onclick="switchPage('work')">Work</a></li>
+          <li><a class="hover-trigger" onclick="switchPage('services')">Services</a></li>
+          <li><a class="hover-trigger" onclick="switchPage('process')">Prozess</a></li>
+          <li><a class="hover-trigger" onclick="switchPage('reviews')">Reviews</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Kontakt</h5>
+        <ul>
+          <li><a class="hover-trigger" href="mailto:tahadurcan@gmail.com">tahadurcan@gmail.com</a></li>
+          <li><a class="hover-trigger" onclick="switchPage('contact')">Projekt anfragen</a></li>
+          <li><a class="hover-trigger" onclick="openContact('Kostenlose Demo')">Demo anfordern</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <div>© 2026 DCN AGENCY — All rights reserved</div>
+      <div class="heart">crafted with <em>obsession</em> in DE</div>
+      <div>v.4.0 / 2026</div>
+    </div>
+  </footer>
+
+  </div><!-- /page-home -->
+
+<div class="page" id="page-about" data-page="about">
+
   <!-- ABOUT -->
   <section id="about" data-section="about">
     <div class="dot-grid"></div>
@@ -1090,6 +1270,10 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
       </div>
     </div>
   </section>
+
+  </div><!-- /page-about -->
+
+<div class="page" id="page-work" data-page="work">
 
   <!-- WORK / PORTFOLIO -->
   <section class="work" id="work" data-section="work">
@@ -1186,6 +1370,10 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
     </div>
   </section>
 
+  </div><!-- /page-work -->
+
+<div class="page" id="page-services" data-page="services">
+
   <!-- SERVICES -->
   <section id="services" data-section="services">
     <div class="section-tag reveal"><span class="num">04</span><span class="dash"></span><span>Services / Pricing</span></div>
@@ -1234,8 +1422,21 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
           <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
         </div>
       </div>
+
+      <div class="service-row hover-trigger" data-service="chatbot" data-img="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=600">
+        <div class="idx">/05</div>
+        <h3>Professioneller <em>ChatBot</em></h3>
+        <div class="price"><span class="from">ab</span><span>400€</span></div>
+        <div class="arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </div>
+      </div>
     </div>
   </section>
+
+  </div><!-- /page-services -->
+
+<div class="page" id="page-process" data-page="process">
 
   <!-- PROCESS -->
   <section class="process" id="process" data-section="process">
@@ -1284,6 +1485,10 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
     </div>
   </section>
 
+  </div><!-- /page-process -->
+
+<div class="page" id="page-reviews" data-page="reviews">
+
   <!-- REVIEWS -->
   <section id="reviews" data-section="reviews">
     <div class="section-tag reveal"><span class="num">06</span><span class="dash"></span><span>Reviews / Trust</span></div>
@@ -1320,10 +1525,65 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
           <div class="verified">● Verifizierter Kunde</div>
         </div>
       </div>
+
+      <div class="review-card tilt reveal d2">
+        <div class="quote tilt-layer">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="text">Schnelle Lieferung, faire Preise und ein Auge fürs Detail wie ich es selten gesehen habe. Die Animationen auf meiner neuen Seite haben Kunden tatsächlich gefragt, „wie hast du DAS gemacht?" — und das ist für mich der beste Beweis.</p>
+        <div class="author-row">
+          <div class="author">Lara M.</div>
+          <div class="verified">● Verifizierter Kunde</div>
+        </div>
+      </div>
+
+      <div class="review-card tilt reveal d3">
+        <div class="quote tilt-layer">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="text">Ich hatte vorher mit zwei „Agenturen" gearbeitet, die deutlich teurer waren — und beide haben nur Templates abgeliefert. DCN baut tatsächlich custom. Der Unterschied ist Tag und Nacht. Klare Empfehlung.</p>
+        <div class="author-row">
+          <div class="author">Marvin K.</div>
+          <div class="verified">● Verifizierter Kunde</div>
+        </div>
+      </div>
+
+      <div class="review-card tilt reveal">
+        <div class="quote tilt-layer">"</div>
+        <div class="stars">★★★★★</div>
+        <p class="text">Top Kommunikation, immer erreichbar und denkt mit. Ich habe nur grob beschrieben was ich wollte und Taha hat aus diesen 3 Sätzen eine Website gezaubert die genau dem entsprach, was ich im Kopf hatte. Magic.</p>
+        <div class="author-row">
+          <div class="author">Sarah B.</div>
+          <div class="verified">● Verifizierter Kunde</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Trust band -->
+    <div class="trust-band reveal d2">
+      <div class="trust-item"><div class="trust-num"><span class="count" data-to="50" data-decimals="0">0</span>+</div><div class="trust-label">Projekte</div></div>
+      <div class="trust-item"><div class="trust-num">24<span style="color:var(--accent);">h</span></div><div class="trust-label">Antwortzeit</div></div>
+      <div class="trust-item"><div class="trust-num">100<span style="color:var(--accent);">%</span></div><div class="trust-label">Custom Code</div></div>
+      <div class="trust-item"><div class="trust-num">0<span style="color:var(--accent);">€</span></div><div class="trust-label">Demo-Kosten</div></div>
+    </div>
+
+    <div class="reviews-cta reveal d3">
+      <div>
+        <div style="font-family:var(--display);font-weight:600;font-size:32px;letter-spacing:-.01em;line-height:1.1;">Willst du der nächste<br>★★★★★ <em style="font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);">Review</em> sein?</div>
+      </div>
+      <button class="cta-btn hover-trigger" onclick="switchPage('contact')">
+        Projekt starten
+        <span class="arrow-circle">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </span>
+      </button>
     </div>
   </section>
 
-  <!-- CTA -->
+  </div><!-- /page-reviews -->
+
+<div class="page" id="page-contact" data-page="contact">
+
+  <!-- CONTACT HERO -->
   <section class="cta" id="cta" data-section="cta">
     <div class="dot-grid"></div>
     <div class="cta-canvas" id="ctaCanvas"></div>
@@ -1332,45 +1592,23 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
     <h2 class="cta-title reveal d1">
       Lass uns<br>etwas <em>bauen.</em>
     </h2>
+    <p class="reveal d2" style="max-width:520px;margin:30px auto 40px;font-size:16px;color:var(--muted);line-height:1.7;">
+      Klicke auf den Knot — er reagiert. Oder leg direkt los: vier kurze Schritte, dein Briefing landet bei mir, <strong style="color:var(--text);">Antwort innerhalb von 24h</strong>.
+    </p>
     <button class="cta-btn hover-trigger reveal d2" onclick="openContact('Allgemeine Anfrage')">
-      Projekt starten
+      Briefing starten
       <span class="arrow-circle">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </span>
     </button>
-    <div class="reveal d3" style="margin-top:30px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">Klicke auf den Knot — er reagiert.</div>
+    <div class="reveal d3" style="margin-top:50px;display:flex;gap:30px;justify-content:center;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);flex-wrap:wrap;">
+      <div>★ tahadurcan@gmail.com</div>
+      <div>★ Antwort &lt; 24h</div>
+      <div>★ Q2 / 2026 verfügbar</div>
+    </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="foot-top">
-      <div class="foot-mark">DCN<span class="dot">.</span></div>
-      <div class="foot-col">
-        <h5>Navigation</h5>
-        <ul>
-          <li><a class="hover-trigger" data-scroll="hero">Home</a></li>
-          <li><a class="hover-trigger" data-scroll="about">Über</a></li>
-          <li><a class="hover-trigger" data-scroll="work">Work</a></li>
-          <li><a class="hover-trigger" data-scroll="services">Services</a></li>
-          <li><a class="hover-trigger" data-scroll="process">Prozess</a></li>
-          <li><a class="hover-trigger" data-scroll="reviews">Reviews</a></li>
-        </ul>
-      </div>
-      <div class="foot-col">
-        <h5>Kontakt</h5>
-        <ul>
-          <li><a class="hover-trigger" href="mailto:tahadurcan@gmail.com">tahadurcan@gmail.com</a></li>
-          <li><a class="hover-trigger" onclick="openContact('Allgemeine Anfrage')">Projekt anfragen</a></li>
-          <li><a class="hover-trigger" onclick="openContact('Kostenlose Demo')">Demo anfordern</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="foot-bottom">
-      <div>© 2026 DCN AGENCY — All rights reserved</div>
-      <div class="heart">crafted with <em>obsession</em> in DE</div>
-      <div>v.4.0 / 2026</div>
-    </div>
-  </footer>
+  </div><!-- /page-contact -->
 
 </main>
 
@@ -1398,9 +1636,42 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
   </div>
 </div>
 
-<!-- CONTACT PANEL — MULTI STEP -->
+<!-- PROJECT DETAIL MODAL -->
+<div class="proj-modal" id="projModal">
+  <div class="proj-modal-content">
+    <div class="proj-modal-img" id="projModalImg"></div>
+    <div class="proj-modal-info">
+      <div class="proj-modal-close hover-trigger" onclick="closeProject()">✕</div>
+      <div class="proj-modal-eyebrow" id="projModalNum">CASE / 01</div>
+      <h3 class="proj-modal-title" id="projModalTitle">PROJECT</h3>
+      <div class="proj-modal-meta">
+        <span><span class="acc">●</span> <span id="projModalCat">Category</span></span>
+        <span>—</span>
+        <span id="projModalYear">2025</span>
+        <span>—</span>
+        <span id="projModalDuration">—</span>
+      </div>
+      <p class="proj-modal-desc" id="projModalDesc">Description.</p>
+      <div>
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Tech Stack</div>
+        <div class="proj-modal-stack" id="projModalStack"></div>
+      </div>
+      <div class="proj-modal-actions">
+        <button class="proj-modal-action primary hover-trigger" onclick="proceedFromProject()">
+          Ähnliches Projekt anfragen
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+        </button>
+        <button class="proj-modal-action secondary hover-trigger" onclick="closeProject()">Schließen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT PANEL — FULL SCREEN MULTI STEP -->
 <div class="contact-panel" id="contactPanel">
+  <div class="contact-canvas" id="contactCanvas"></div>
   <div class="contact-bg"></div>
+  <div class="contact-side-headline">Lass uns<br><em>reden.</em></div>
   <div class="contact-close hover-trigger" onclick="closeContact()">✕</div>
   <div class="contact-inner">
     <div class="contact-eyebrow">Start a project</div>
@@ -1445,6 +1716,12 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
             <div class="svc-num">/04</div>
             <div class="svc-name">Profi <em>Website</em></div>
             <div class="svc-price">ab 800€</div>
+          </button>
+          <button type="button" class="svc-card hover-trigger" data-svc="Professioneller ChatBot" data-price="ab 400€" style="grid-column:span 2;">
+            <div class="svc-check">✓</div>
+            <div class="svc-num">/05</div>
+            <div class="svc-name">Professioneller <em>ChatBot</em></div>
+            <div class="svc-price">ab 400€ — AI / Automation</div>
           </button>
         </div>
         <div class="step-nav">
@@ -1578,6 +1855,19 @@ const serviceData = {
       'Kontaktseite + E-Mail/Tel-Verknüpfung',
       'Automatisches Kontaktformular (Mailto)',
       'Modernes Rezensions-System'
+    ]
+  },
+  chatbot: {
+    title: 'Professioneller ChatBot',
+    eyebrow: 'AI / AUTOMATION',
+    price: 'Preis: <strong>ab 400€</strong> · individuell',
+    items: [
+      'Custom AI ChatBot für deine Website',
+      'Trainiert auf deine Daten / FAQ / Produkte',
+      'Nahtlose Integration in deine bestehende Site',
+      'Einfaches Admin-Panel zum Anpassen',
+      '24/7 verfügbar — antwortet sofort',
+      'Mehrsprachig & DSGVO-konform'
     ]
   }
 };
@@ -1955,11 +2245,10 @@ bindHover();
 })();
 
 /* ============================================================
-   CTA 3D — TORUS KNOT
+   TORUS KNOT 3D — used by CTA + Contact Panel
 ============================================================ */
-(function initCta() {
-  const mount = document.getElementById('ctaCanvas');
-  if (!mount || !window.THREE) return;
+function spawnKnot(mount) {
+  if (!mount || !window.THREE) return null;
   try {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, mount.clientWidth / mount.clientHeight, 0.1, 100);
@@ -2037,10 +2326,14 @@ bindHover();
       camera.updateProjectionMatrix();
       renderer.setSize(mount.clientWidth, mount.clientHeight);
     });
+    return { renderer, scene, camera };
   } catch (err) {
-    console.warn('CTA WebGL failed:', err);
+    console.warn('Knot WebGL failed:', err);
+    return null;
   }
-})();
+}
+spawnKnot(document.getElementById('ctaCanvas'));
+spawnKnot(document.getElementById('contactCanvas'));
 
 /* ============================================================
    PROCESS TRACK ANIMATION
@@ -2059,37 +2352,70 @@ const io = new IntersectionObserver((entries) => {
 }, { threshold: 0.15 });
 reveals.forEach(r => io.observe(r));
 
-const progressEl = document.getElementById('scrollProgress');
-const headerItems = document.querySelectorAll('.header-index .hidx');
-const sections = document.querySelectorAll('[data-section]');
-window.addEventListener('scroll', () => {
-  const total = document.documentElement.scrollHeight - window.innerHeight;
-  const p = (window.scrollY / total) * 100;
-  progressEl.style.width = p + '%';
-
-  let active = sections[0]?.dataset.section;
-  sections.forEach(s => {
-    const r = s.getBoundingClientRect();
-    if (r.top < window.innerHeight * 0.45) active = s.dataset.section;
-  });
-  headerItems.forEach(i => i.classList.toggle('active', i.dataset.target === active));
-});
-
 /* ============================================================
-   SMOOTH SCROLL TO ANCHOR
+   PAGE SYSTEM — switchPage with curtain transition
 ============================================================ */
-document.querySelectorAll('[data-scroll]').forEach(el => {
-  el.addEventListener('click', e => {
-    e.preventDefault();
-    const target = document.getElementById(el.dataset.scroll);
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-});
+const PAGE_NAMES = { home:'Index', about:'Studio', work:'Work', services:'Services', process:'Prozess', reviews:'Trust', contact:'Contact' };
+const PAGE_NUMS = { home:'01', about:'02', work:'03', services:'04', process:'05', reviews:'06', contact:'07' };
+const headerItems = document.querySelectorAll('.header-index .hidx');
+const allPages = document.querySelectorAll('.page');
+const curtain = document.getElementById('curtain');
+const curtainText = document.getElementById('curtainText');
+const pgNow = document.getElementById('pgNow');
+const pgName = document.getElementById('pgName');
+let currentPage = 'home';
+let isTransitioning = false;
+
+function switchPage(target) {
+  if (!target || isTransitioning || target === currentPage) return;
+  if (!document.getElementById('page-' + target)) return;
+  isTransitioning = true;
+
+  // close any open overlays first
+  closeContact && closeContact();
+  closeDetails && closeDetails();
+  closeProject && closeProject();
+
+  curtainText.textContent = PAGE_NAMES[target] + '.';
+  curtain.classList.remove('exit');
+  curtain.classList.add('active');
+
+  setTimeout(() => {
+    allPages.forEach(p => p.classList.remove('active'));
+    const newPage = document.getElementById('page-' + target);
+    newPage.classList.add('active');
+    newPage.scrollTop = 0;
+    currentPage = target;
+    document.body.dataset.page = target;
+    headerItems.forEach(i => i.classList.toggle('active', i.dataset.page === target));
+    pgNow.textContent = PAGE_NUMS[target];
+    pgName.textContent = PAGE_NAMES[target];
+
+    // re-trigger reveal observers for newly visible reveals
+    newPage.querySelectorAll('.reveal').forEach(r => {
+      r.classList.remove('in');
+      requestAnimationFrame(() => {
+        const rect = r.getBoundingClientRect();
+        if (rect.top < window.innerHeight) r.classList.add('in');
+      });
+    });
+
+    curtain.classList.remove('active');
+    curtain.classList.add('exit');
+    setTimeout(() => {
+      curtain.classList.add('no-anim');
+      curtain.classList.remove('exit');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => curtain.classList.remove('no-anim'));
+      });
+      isTransitioning = false;
+    }, 850);
+  }, 700);
+}
+window.switchPage = switchPage;
+
 headerItems.forEach(item => {
-  item.addEventListener('click', () => {
-    const target = document.getElementById(item.dataset.target);
-    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+  item.addEventListener('click', e => { e.preventDefault(); switchPage(item.dataset.page); });
 });
 
 /* ============================================================
@@ -2210,17 +2536,22 @@ function setStep(n) {
 function openContact(service) {
   if (service && service !== 'Allgemeine Anfrage') {
     formState.service = service;
+    let matched = false;
     document.querySelectorAll('.svc-card').forEach(c => {
-      c.classList.toggle('selected', c.dataset.svc === service);
-      if (c.dataset.svc === service) formState.price = c.dataset.price;
+      const m = c.dataset.svc === service;
+      c.classList.toggle('selected', m);
+      if (m) { formState.price = c.dataset.price; matched = true; }
     });
+    if (!matched) formState.price = 'individuell';
     document.getElementById('step1Next').disabled = !formState.service;
   }
   successScreen.classList.remove('visible');
   contactPanel.classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
 function closeContact() {
   contactPanel.classList.remove('open');
+  document.body.style.overflow = '';
   setTimeout(() => {
     setStep(1);
     successScreen.classList.remove('visible');
@@ -2340,13 +2671,111 @@ function burstAt(x, y, n = 14) {
 }
 
 /* ============================================================
-   PROJECT CARDS — open contact with project context
+   PROJECT DETAIL MODAL
 ============================================================ */
+const PROJECT_DATA = {
+  nordisk: {
+    title: 'Nordisk <em>Cabins</em>',
+    cat: 'Hospitality / Booking',
+    year: '2025',
+    duration: '6 Wochen',
+    img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1400',
+    desc: 'Premium Booking-Plattform für ein skandinavisches Cabin-Resort. Inklusive interaktivem 3D-Grundrissviewer, WebGL-Kamerafahrten durch die Cabins und einem Headless-CMS für die Inhaberin. Konversionsrate +180%.',
+    stack: ['Next.js', 'Three.js', 'Sanity', 'Stripe', 'Vercel']
+  },
+  atelier: {
+    title: 'Atelier <em>Solen</em>',
+    cat: 'Fashion / E-Commerce',
+    year: '2025',
+    duration: '4 Wochen',
+    img: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=1400',
+    desc: 'Editorial Fashion-Store mit Custom-Cursor, GSAP-Choreografie und Headless-Shopify-Setup. Lookbook-Hero mit scroll-driven Outfits, Click-to-Cart in 2 Sekunden.',
+    stack: ['Hydrogen', 'Shopify', 'GSAP', 'Cloudflare']
+  },
+  keno: {
+    title: 'Keno <em>Motors</em>',
+    cat: 'Automotive',
+    year: '2024',
+    duration: '8 Wochen',
+    img: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=1400',
+    desc: 'Konfigurator mit echtem Three.js-Modell und Echtzeit-Lackvisualisierung. Felgen, Innenraum und Optionen werden live gerendert. Performance: 60fps auf Mid-Range Mobile.',
+    stack: ['React', 'Three.js', 'GLTF', 'Drei', 'R3F']
+  },
+  lumen: {
+    title: 'Lumen <em>Health</em>',
+    cat: 'Health / SaaS',
+    year: '2024',
+    duration: '5 Wochen',
+    img: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=1400',
+    desc: 'Patientenportal mit Dashboard, animierten Datavisualisierungen (Heartrate, Schlaf, Aktivität) und Apple-Health-Integration über HealthKit. WCAG 2.2 AA konform.',
+    stack: ['SvelteKit', 'D3.js', 'Supabase', 'HealthKit']
+  },
+  obscura: {
+    title: 'Obscura <em>Type</em>',
+    cat: 'Type Foundry',
+    year: '2023',
+    duration: '3 Wochen',
+    img: 'https://images.unsplash.com/photo-1561070791-2526d30994b8?auto=format&fit=crop&q=80&w=1400',
+    desc: 'Brutalistische Type-Specimen-Site mit Variable-Font-Playground und Webshop. Nutzer können Glyphen live tunen, Specimen-PDFs generieren, direkt lizensieren.',
+    stack: ['Astro', 'OpenType.js', 'WebGL', 'LemonSqueezy']
+  },
+  'studio-hope': {
+    title: 'Studio <em>Hope</em>',
+    cat: 'Brand Studio',
+    year: '2024',
+    duration: '7 Wochen',
+    img: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1400',
+    desc: 'Komplettes Rebranding: Identity, Website und Showreel. Kunde lobte „die beste Übergabe, die ich je hatte" — inklusive Design-System-Doku, Notion-Wiki und Loom-Walkthroughs.',
+    stack: ['Webflow', 'Figma', 'After Effects', 'Notion']
+  },
+  halo: {
+    title: 'Halo <em>Protocol</em>',
+    cat: 'Crypto / Fintech',
+    year: '2025',
+    duration: '6 Wochen',
+    img: 'https://images.unsplash.com/photo-1635322966219-b75ed372eb01?auto=format&fit=crop&q=80&w=1400',
+    desc: 'Onboarding-Flow für ein DeFi-Protokoll. Interaktive 3D-Network-Visualisierung der Validators, Wallet-Connect, Live-TVL-Stats. KYC-Integration in 4 Klicks.',
+    stack: ['Next.js', 'wagmi', 'Three.js', 'Tailwind']
+  }
+};
+
+const projModal = document.getElementById('projModal');
+const projModalImg = document.getElementById('projModalImg');
+const projModalTitle = document.getElementById('projModalTitle');
+const projModalCat = document.getElementById('projModalCat');
+const projModalYear = document.getElementById('projModalYear');
+const projModalDuration = document.getElementById('projModalDuration');
+const projModalDesc = document.getElementById('projModalDesc');
+const projModalStack = document.getElementById('projModalStack');
+const projModalNum = document.getElementById('projModalNum');
+let currentProject = null;
+
+function openProject(key) {
+  const p = PROJECT_DATA[key];
+  if (!p) return;
+  currentProject = key;
+  projModalImg.style.backgroundImage = `url('${p.img}')`;
+  projModalTitle.innerHTML = p.title;
+  projModalCat.textContent = p.cat;
+  projModalYear.textContent = p.year;
+  projModalDuration.textContent = p.duration;
+  projModalDesc.textContent = p.desc;
+  projModalNum.textContent = 'CASE / ' + key.toUpperCase();
+  projModalStack.innerHTML = p.stack.map(s => `<span class="chip">${escapeHtml(s)}</span>`).join('');
+  projModal.classList.add('open');
+}
+function closeProject() { if (projModal) projModal.classList.remove('open'); }
+function proceedFromProject() {
+  const p = PROJECT_DATA[currentProject];
+  closeProject();
+  setTimeout(() => openContact(`Projekt-Anfrage: ${(p?.title || '').replace(/<[^>]+>/g, '')}`.trim()), 400);
+}
+window.openProject = openProject;
+window.closeProject = closeProject;
+window.proceedFromProject = proceedFromProject;
+
 document.querySelectorAll('.project-card').forEach(card => {
-  card.addEventListener('click', () => {
-    const name = card.querySelector('.project-name')?.innerText.replace(/\s+/g, ' ').trim();
-    openContact(`Projekt-Anfrage zu "${name}"`);
-  });
+  card.addEventListener('click', () => openProject(card.dataset.project));
 });
 
 /* ============================================================
@@ -2354,7 +2783,7 @@ document.querySelectorAll('.project-card').forEach(card => {
 ============================================================ */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    closeDetails(); closeContact(); closePopup();
+    closeDetails(); closeContact(); closePopup(); closeProject();
   }
 });
 
