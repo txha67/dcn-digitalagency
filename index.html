@@ -499,6 +499,12 @@ section > *:not(.dot-grid){position:relative;z-index:1;}
 .services-title em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);text-transform:none;}
 .services-intro{max-width:380px;color:var(--muted);font-size:15px;line-height:1.6;}
 
+.services-3d{
+  position:absolute;top:120px;right:50px;width:280px;height:280px;pointer-events:none;
+  z-index:0;opacity:.7;
+}
+.services-3d canvas{display:block;width:100%!important;height:100%!important;}
+
 .service-list{position:relative;}
 .service-row{
   position:relative;display:grid;grid-template-columns:80px 1fr auto auto;align-items:center;
@@ -1039,6 +1045,8 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
   .trust-band{grid-template-columns:repeat(2,1fr);}
   .reviews-cta{padding:30px;flex-direction:column;align-items:flex-start;}
   .page-counter{display:none;}
+  .services-3d{display:none;}
+  .about-3d{height:240px;}
   section{padding:90px 24px;}
   .hero{padding:24px;}
   .hero-eyebrow{top:90px;left:24px;}
@@ -1376,6 +1384,7 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
 
   <!-- SERVICES -->
   <section id="services" data-section="services">
+    <div class="services-3d" id="servicesCanvas"></div>
     <div class="section-tag reveal"><span class="num">04</span><span class="dash"></span><span>Services / Pricing</span></div>
     <div class="services-head">
       <h2 class="services-title reveal">
@@ -2334,6 +2343,48 @@ function spawnKnot(mount) {
 }
 spawnKnot(document.getElementById('ctaCanvas'));
 spawnKnot(document.getElementById('contactCanvas'));
+
+/* ============================================================
+   SERVICES 3D — DODECAHEDRON
+============================================================ */
+(function initServices3D() {
+  const mount = document.getElementById('servicesCanvas');
+  if (!mount || !window.THREE) return;
+  try {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    camera.position.z = 4;
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    renderer.setClearColor(0x000000, 0);
+    mount.appendChild(renderer.domElement);
+
+    const dodec = new THREE.Mesh(
+      new THREE.DodecahedronGeometry(1.4, 0),
+      new THREE.MeshBasicMaterial({ color: 0xCCFF00, wireframe: true, transparent: true, opacity: 0.5 })
+    );
+    const dodecInner = new THREE.Mesh(
+      new THREE.DodecahedronGeometry(1.38, 0),
+      new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.6 })
+    );
+    scene.add(dodec); scene.add(dodecInner);
+
+    const clock = new THREE.Clock();
+    function loop() {
+      requestAnimationFrame(loop);
+      const t = clock.getElapsedTime();
+      dodec.rotation.x = t * 0.3;
+      dodec.rotation.y = t * 0.45;
+      dodecInner.rotation.copy(dodec.rotation);
+      renderer.render(scene, camera);
+    }
+    loop();
+    window.addEventListener('resize', () => {
+      renderer.setSize(mount.clientWidth, mount.clientHeight);
+    });
+  } catch (e) { console.warn('Services 3D failed:', e); }
+})();
 
 /* ============================================================
    PROCESS TRACK ANIMATION
