@@ -330,6 +330,122 @@ section > *:not(.dot-grid){position:relative;z-index:1;}
 .stat .num em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);}
 .stat .label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:14px;}
 
+/* ABOUT 3D MINI CUBE */
+.about-3d{
+  position:relative;width:100%;height:340px;display:flex;align-items:center;justify-content:center;
+  margin-top:30px;perspective:1200px;
+}
+.cube-3d{
+  position:relative;width:160px;height:160px;transform-style:preserve-3d;
+  animation:cubeRotate 22s linear infinite;
+}
+@keyframes cubeRotate{
+  0%{transform:rotateX(0) rotateY(0) rotateZ(0);}
+  100%{transform:rotateX(360deg) rotateY(360deg) rotateZ(180deg);}
+}
+.cube-face{
+  position:absolute;inset:0;border:1px solid var(--accent);
+  background:linear-gradient(135deg,rgba(204,255,0,.04),rgba(204,255,0,.01));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:800;color:var(--accent);font-size:26px;
+  box-shadow:inset 0 0 30px rgba(204,255,0,.15);
+}
+.cube-face.f1{transform:translateZ(80px);}
+.cube-face.f2{transform:rotateY(180deg) translateZ(80px);}
+.cube-face.f3{transform:rotateY(90deg) translateZ(80px);}
+.cube-face.f4{transform:rotateY(-90deg) translateZ(80px);}
+.cube-face.f5{transform:rotateX(90deg) translateZ(80px);}
+.cube-face.f6{transform:rotateX(-90deg) translateZ(80px);}
+
+/* FLOATING DOTS BG */
+.float-dots{
+  position:absolute;inset:0;pointer-events:none;
+}
+.float-dots .d{
+  position:absolute;width:4px;height:4px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 10px var(--accent);opacity:.6;
+  animation:floatDot 6s ease-in-out infinite;
+}
+@keyframes floatDot{
+  0%,100%{transform:translateY(0) scale(1);opacity:.4;}
+  50%{transform:translateY(-30px) scale(1.4);opacity:1;}
+}
+
+/* ============================================================
+   WORK / PORTFOLIO
+============================================================ */
+.work{background:var(--bg-soft);position:relative;overflow:hidden;}
+.work-head{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:flex-end;margin-bottom:60px;}
+.work-title{
+  font-family:var(--display);font-weight:700;font-size:clamp(60px,9vw,160px);
+  line-height:.9;letter-spacing:-.03em;text-transform:uppercase;
+}
+.work-title em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);text-transform:none;}
+.work-meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+.work-meta .count-num{font-family:var(--display);font-weight:700;font-size:60px;line-height:1;letter-spacing:-.02em;color:var(--text);}
+.work-meta .count-num em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);}
+
+.work-grid{
+  display:grid;grid-template-columns:repeat(12,1fr);gap:24px;perspective:2000px;
+}
+.project-card{
+  position:relative;border-radius:16px;overflow:hidden;cursor:none;
+  transform-style:preserve-3d;transition:transform .9s var(--ease);
+  background:#0A0A0A;border:1px solid var(--line);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  min-height:380px;
+}
+.project-card.large{grid-column:span 7;min-height:520px;}
+.project-card.medium{grid-column:span 5;min-height:520px;}
+.project-card.wide{grid-column:span 8;min-height:420px;}
+.project-card.small{grid-column:span 4;min-height:420px;}
+.project-card.thirds{grid-column:span 4;min-height:380px;}
+.project-img{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  filter:grayscale(60%) brightness(.55) contrast(1.1);
+  transition:filter .8s var(--ease),transform 1.2s var(--ease);
+  transform:scale(1.05);
+}
+.project-card:hover .project-img{filter:grayscale(0%) brightness(.85) contrast(1.1);transform:scale(1.12);}
+.project-card::after{
+  content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.85));
+}
+.project-info{
+  position:relative;z-index:2;padding:32px;display:flex;flex-direction:column;gap:8px;
+  transform:translateY(8px);transition:transform .7s var(--ease);
+}
+.project-card:hover .project-info{transform:translateY(0);}
+.project-meta{display:flex;justify-content:space-between;align-items:center;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.project-meta .tag{color:var(--accent);}
+.project-name{
+  font-family:var(--display);font-weight:700;font-size:clamp(28px,3vw,46px);
+  line-height:1;letter-spacing:-.02em;text-transform:uppercase;color:#fff;
+}
+.project-name em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);text-transform:none;}
+.project-desc{font-size:14px;color:#bfbfbb;line-height:1.5;margin-top:8px;max-width:90%;
+  opacity:0;transform:translateY(10px);transition:all .6s var(--ease) .1s;
+}
+.project-card:hover .project-desc{opacity:1;transform:translateY(0);}
+.project-cta{
+  display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--accent);margin-top:14px;font-weight:600;
+  opacity:0;transform:translateX(-10px);transition:all .5s var(--ease) .2s;
+}
+.project-card:hover .project-cta{opacity:1;transform:translateX(0);}
+.project-cta svg{transition:transform .4s var(--ease);}
+.project-card:hover .project-cta svg{transform:translateX(4px);}
+.project-num{
+  position:absolute;top:24px;right:28px;font-family:var(--display);font-weight:700;font-size:13px;
+  letter-spacing:1.5px;color:var(--accent);z-index:2;
+}
+.project-tag-pill{
+  position:absolute;top:24px;left:28px;display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:100px;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);
+  font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;z-index:2;
+  border:1px solid rgba(255,255,255,.1);
+}
+.project-tag-pill .live-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite;}
+
 /* ============================================================
    SERVICES
 ============================================================ */
@@ -395,27 +511,67 @@ section > *:not(.dot-grid){position:relative;z-index:1;}
 /* ============================================================
    PROCESS
 ============================================================ */
-.process{background:var(--bg-soft);}
-.process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:60px;}
+.process{background:var(--bg-soft);overflow:hidden;}
+.process-track{
+  position:relative;margin-top:80px;padding:0 0 30px;
+}
+.process-line{
+  position:absolute;top:60px;left:5%;right:5%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(204,255,0,.3) 10%,rgba(204,255,0,.6) 50%,rgba(204,255,0,.3) 90%,transparent);
+}
+.process-line::before{
+  content:"";position:absolute;left:0;top:-1px;height:3px;width:0;
+  background:var(--accent);box-shadow:0 0 12px var(--accent);
+  transition:width 1.6s var(--ease);
+}
+.process-track.in .process-line::before{width:100%;}
+.process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;position:relative;z-index:2;}
 .process-step{
-  background:var(--bg-soft);padding:40px 30px;display:flex;flex-direction:column;gap:18px;
-  transition:background .4s,transform .5s var(--ease);position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#141414,#0E0E0E);
+  border:1px solid var(--line);border-radius:14px;
+  padding:36px 28px;display:flex;flex-direction:column;gap:18px;
+  transition:transform .6s var(--ease),border-color .4s,background .4s;
+  position:relative;overflow:hidden;
 }
 .process-step::before{
-  content:"";position:absolute;inset:0;background:radial-gradient(circle at top right,var(--accent-soft),transparent 60%);
+  content:"";position:absolute;top:-2px;left:-2px;right:-2px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
   opacity:0;transition:opacity .5s;
 }
-.process-step:hover{background:#171717;}
+.process-step:hover{border-color:rgba(204,255,0,.3);}
 .process-step:hover::before{opacity:1;}
+.process-step .step-orb{
+  position:relative;width:48px;height:48px;border-radius:50%;
+  background:radial-gradient(circle,#0E0E0E 30%,#181818);
+  border:1px solid rgba(204,255,0,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--display);font-weight:700;font-size:14px;color:var(--accent);
+  letter-spacing:.5px;flex-shrink:0;
+  box-shadow:0 0 20px rgba(204,255,0,.15),inset 0 0 10px rgba(204,255,0,.08);
+}
+.process-step .step-orb::before{
+  content:"";position:absolute;inset:-6px;border-radius:50%;border:1px dashed rgba(204,255,0,.3);
+  animation:orbSpin 12s linear infinite;
+}
+@keyframes orbSpin{to{transform:rotate(360deg);}}
 .process-step .num{
-  font-family:var(--display);font-weight:700;font-size:13px;color:var(--accent);letter-spacing:2px;
-  display:flex;align-items:center;gap:10px;
+  font-family:var(--display);font-weight:700;font-size:11px;color:var(--accent);letter-spacing:2.5px;
+  display:flex;align-items:center;gap:10px;text-transform:uppercase;
 }
 .process-step .num::after{content:"";flex:1;height:1px;background:var(--line);}
-.process-step h4{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:-.01em;line-height:1.2;}
+.process-step h4{font-family:var(--display);font-weight:600;font-size:26px;letter-spacing:-.01em;line-height:1.1;}
 .process-step h4 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);}
 .process-step p{font-size:14px;color:var(--muted);line-height:1.6;}
-.process-step .icon{width:38px;height:38px;color:var(--text);}
+.process-step .icon{width:36px;height:36px;color:var(--text);}
+.process-step .duration{
+  margin-top:auto;padding-top:16px;border-top:1px solid var(--line);
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.process-step .duration .pill{
+  display:inline-block;padding:4px 10px;border-radius:100px;background:rgba(204,255,0,.1);
+  color:var(--accent);font-weight:600;
+}
 
 /* ============================================================
    REVIEWS
@@ -452,9 +608,11 @@ section > *:not(.dot-grid){position:relative;z-index:1;}
    CTA
 ============================================================ */
 .cta{
-  position:relative;text-align:center;padding:200px 50px;border-top:1px solid var(--line);
-  overflow:hidden;
+  position:relative;text-align:center;padding:240px 50px;border-top:1px solid var(--line);
+  overflow:hidden;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
 }
+.cta-canvas{position:absolute;inset:0;z-index:0;}
+.cta-canvas canvas{display:block;width:100%!important;height:100%!important;}
 .cta-glow{
   position:absolute;top:50%;left:50%;width:900px;height:900px;
   transform:translate(-50%,-50%);
@@ -582,28 +740,89 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
 .modal-action:hover{transform:scale(1.02);}
 
 /* ============================================================
-   CONTACT PANEL
+   CONTACT PANEL — MULTI STEP
 ============================================================ */
 .contact-panel{
-  position:fixed;top:0;right:0;height:100vh;width:0;background:#0E0E0E;z-index:800;
+  position:fixed;top:0;right:0;height:100vh;width:0;background:linear-gradient(180deg,#0F0F0F,#080808);z-index:800;
   border-left:1px solid var(--line);overflow:hidden;
   transition:width .9s var(--ease);
-  display:flex;flex-direction:column;justify-content:center;
+  display:flex;flex-direction:column;
 }
-.contact-panel.open{width:min(560px,100vw);}
-.contact-inner{padding:80px 60px;width:100%;}
+.contact-panel.open{width:min(620px,100vw);}
+.contact-bg{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(circle at top right,rgba(204,255,0,.08),transparent 50%),radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);
+  background-size:auto, 28px 28px;
+}
+.contact-bg::after{
+  content:"";position:absolute;top:-100px;right:-100px;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(204,255,0,.18),transparent 70%);
+  animation:glowFloat 8s ease-in-out infinite;
+}
+.contact-inner{padding:60px 60px 40px;width:100%;display:flex;flex-direction:column;height:100%;position:relative;z-index:2;}
 .contact-close{
-  position:absolute;top:30px;right:30px;width:42px;height:42px;border-radius:50%;
+  position:absolute;top:24px;right:24px;width:42px;height:42px;border-radius:50%;
   border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
-  font-size:16px;transition:all .3s;
+  font-size:16px;transition:all .3s;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);z-index:5;
 }
-.contact-close:hover{background:var(--accent);color:#000;border-color:var(--accent);}
-.contact-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+.contact-close:hover{background:var(--accent);color:#000;border-color:var(--accent);transform:rotate(90deg);}
+
+.contact-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.contact-eyebrow::before{content:"";width:24px;height:1px;background:var(--accent);}
+
 .contact-title{
-  font-family:var(--display);font-weight:700;font-size:48px;letter-spacing:-.02em;
-  text-transform:uppercase;line-height:.95;margin-bottom:40px;
+  font-family:var(--display);font-weight:700;font-size:54px;letter-spacing:-.02em;
+  text-transform:uppercase;line-height:.95;margin-bottom:14px;
 }
 .contact-title em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);text-transform:none;}
+.contact-sub{font-size:14px;color:var(--muted);margin-bottom:30px;line-height:1.6;}
+.contact-sub strong{color:var(--text);}
+
+/* STEP PROGRESS */
+.step-progress{
+  display:flex;align-items:center;gap:8px;margin-bottom:36px;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+}
+.step-progress .dots{display:flex;gap:6px;}
+.step-progress .dot{
+  width:24px;height:3px;background:rgba(255,255,255,.1);border-radius:100px;transition:background .4s;
+}
+.step-progress .dot.done{background:var(--accent);}
+.step-progress .dot.active{background:var(--accent);box-shadow:0 0 8px var(--accent);}
+.step-progress .step-num{font-family:var(--display);font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;}
+
+/* STEPS */
+.contact-steps{position:relative;flex:1;overflow:hidden;}
+.step{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  opacity:0;transform:translateX(40px);pointer-events:none;
+  transition:opacity .5s var(--ease),transform .6s var(--ease);
+}
+.step.active{opacity:1;transform:translateX(0);pointer-events:all;}
+.step.prev{opacity:0;transform:translateX(-40px);}
+.step h3{font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:-.01em;margin-bottom:8px;}
+.step h3 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);}
+.step .help{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5;}
+
+/* SERVICE CHOICE GRID */
+.svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.svc-card{
+  position:relative;padding:18px;border:1px solid var(--line);border-radius:12px;
+  background:rgba(255,255,255,.02);transition:all .4s var(--ease);cursor:none;
+  display:flex;flex-direction:column;gap:8px;
+}
+.svc-card:hover{border-color:rgba(204,255,0,.3);background:rgba(204,255,0,.02);}
+.svc-card.selected{border-color:var(--accent);background:rgba(204,255,0,.08);box-shadow:0 0 24px rgba(204,255,0,.12);}
+.svc-card .svc-num{font-family:var(--display);font-weight:700;font-size:11px;color:var(--muted);letter-spacing:1.5px;}
+.svc-card .svc-name{font-family:var(--display);font-weight:600;font-size:18px;line-height:1.1;letter-spacing:-.01em;}
+.svc-card .svc-name em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);}
+.svc-card .svc-price{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);}
+.svc-card .svc-check{
+  position:absolute;top:12px;right:12px;width:22px;height:22px;border-radius:50%;
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:transparent;background:transparent;transition:all .3s;
+}
+.svc-card.selected .svc-check{background:var(--accent);color:#000;border-color:var(--accent);}
 
 .field{margin-bottom:24px;position:relative;}
 .field label{
@@ -617,13 +836,60 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
 }
 .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-bottom-color:var(--accent);}
 .field input[readonly]{color:var(--accent);font-weight:600;}
-.send-btn{
-  width:100%;padding:20px;background:var(--accent);color:#000;border:none;border-radius:100px;
-  font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
-  display:flex;align-items:center;justify-content:center;gap:12px;margin-top:14px;
-  transition:transform .3s;
+.field-counter{position:absolute;bottom:-18px;right:0;font-size:10px;color:var(--muted);letter-spacing:1px;}
+
+/* BUDGET PILLS */
+.budget-pills{display:flex;flex-wrap:wrap;gap:8px;}
+.budget-pill{
+  padding:9px 16px;border:1px solid var(--line);border-radius:100px;
+  font-size:12px;letter-spacing:1px;color:var(--text);transition:all .3s;cursor:none;
+  background:transparent;font-family:var(--body);
 }
-.send-btn:hover{transform:scale(1.02);}
+.budget-pill:hover{border-color:rgba(204,255,0,.4);}
+.budget-pill.selected{background:var(--accent);color:#000;border-color:var(--accent);}
+
+/* SUMMARY */
+.summary{display:flex;flex-direction:column;gap:0;}
+.summary .row{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  padding:14px 0;border-bottom:1px solid var(--line);
+}
+.summary .row .key{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+.summary .row .val{font-size:14px;color:var(--text);text-align:right;max-width:60%;line-height:1.4;}
+.summary .row .val strong{color:var(--accent);}
+
+/* STEP NAV */
+.step-nav{display:flex;gap:10px;margin-top:auto;padding-top:24px;}
+.step-btn{
+  flex:1;padding:18px;border:none;border-radius:100px;cursor:none;
+  font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:all .3s var(--ease);
+}
+.step-btn.primary{background:var(--accent);color:#000;}
+.step-btn.primary:hover{transform:scale(1.02);box-shadow:0 0 30px rgba(204,255,0,.3);}
+.step-btn.primary:disabled{background:rgba(204,255,0,.3);cursor:not-allowed;color:rgba(0,0,0,.5);}
+.step-btn.secondary{background:transparent;color:var(--muted);border:1px solid var(--line);flex:0 0 auto;padding:18px 24px;}
+.step-btn.secondary:hover{color:var(--text);border-color:var(--text);}
+
+/* SUCCESS */
+.success-screen{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:18px;background:linear-gradient(180deg,#0F0F0F,#080808);
+  opacity:0;pointer-events:none;transition:opacity .5s;z-index:10;padding:40px;
+}
+.success-screen.visible{opacity:1;pointer-events:all;}
+.success-mark{
+  width:80px;height:80px;border-radius:50%;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;font-size:36px;color:#000;
+  box-shadow:0 0 60px rgba(204,255,0,.5);animation:successPop .8s var(--ease);
+}
+@keyframes successPop{
+  0%{transform:scale(0);}50%{transform:scale(1.15);}100%{transform:scale(1);}
+}
+.success-screen h3{font-family:var(--display);font-weight:700;font-size:42px;letter-spacing:-.02em;line-height:1;}
+.success-screen h3 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent);}
+.success-screen p{font-size:14px;color:var(--muted);max-width:340px;line-height:1.6;}
 
 /* ============================================================
    RESPONSIVE
@@ -634,6 +900,15 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
   header{padding:14px 16px;grid-template-columns:auto auto;gap:14px;}
   .header-index{display:none;}
   .nav-cta{padding:10px 14px;font-size:10px;}
+  .work-grid{grid-template-columns:1fr;gap:18px;}
+  .project-card,.project-card.large,.project-card.medium,.project-card.wide,.project-card.small,.project-card.thirds{grid-column:span 1;min-height:340px;}
+  .work-head{grid-template-columns:1fr;gap:20px;}
+  .work-meta{align-items:flex-start;}
+  .process-track{margin-top:40px;}
+  .process-line{display:none;}
+  .svc-grid{grid-template-columns:1fr;}
+  .contact-inner{padding:60px 24px 30px;}
+  .contact-title{font-size:36px;}
   section{padding:90px 24px;}
   .hero{padding:24px;}
   .hero-eyebrow{top:90px;left:24px;}
@@ -697,10 +972,11 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
   <nav class="header-index" id="headerIndex">
     <a class="hidx active hover-trigger" data-target="hero"><span class="num">01</span><span class="label">Index</span></a>
     <a class="hidx hover-trigger" data-target="about"><span class="num">02</span><span class="label">Studio</span></a>
-    <a class="hidx hover-trigger" data-target="services"><span class="num">03</span><span class="label">Services</span></a>
-    <a class="hidx hover-trigger" data-target="process"><span class="num">04</span><span class="label">Prozess</span></a>
-    <a class="hidx hover-trigger" data-target="reviews"><span class="num">05</span><span class="label">Trust</span></a>
-    <a class="hidx hover-trigger" data-target="cta"><span class="num">06</span><span class="label">Contact</span></a>
+    <a class="hidx hover-trigger" data-target="work"><span class="num">03</span><span class="label">Work</span></a>
+    <a class="hidx hover-trigger" data-target="services"><span class="num">04</span><span class="label">Services</span></a>
+    <a class="hidx hover-trigger" data-target="process"><span class="num">05</span><span class="label">Prozess</span></a>
+    <a class="hidx hover-trigger" data-target="reviews"><span class="num">06</span><span class="label">Trust</span></a>
+    <a class="hidx hover-trigger" data-target="cta"><span class="num">07</span><span class="label">Contact</span></a>
   </nav>
   <a class="nav-cta hover-trigger" onclick="openContact('Allgemeine Anfrage')"><span class="pulse"></span> Projekt starten</a>
 </header>
@@ -795,11 +1071,124 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
       <div class="stat"><div class="num"><span class="count" data-to="3.5" data-decimals="1">0</span><em>y</em></div><div class="label">Erfahrung im Craft</div></div>
       <div class="stat"><div class="num"><span class="count" data-to="4.9" data-decimals="1">0</span><em>★</em></div><div class="label">Durchschnittsbewertung</div></div>
     </div>
+
+    <div class="about-3d reveal">
+      <div class="float-dots">
+        <div class="d" style="top:20%;left:15%;animation-delay:0s;"></div>
+        <div class="d" style="top:60%;left:80%;animation-delay:1.2s;"></div>
+        <div class="d" style="top:30%;left:75%;animation-delay:2.4s;"></div>
+        <div class="d" style="top:70%;left:25%;animation-delay:3.6s;"></div>
+        <div class="d" style="top:40%;left:50%;animation-delay:0.8s;"></div>
+      </div>
+      <div class="cube-3d" id="cube3d">
+        <div class="cube-face f1">DCN</div>
+        <div class="cube-face f2">★</div>
+        <div class="cube-face f3">/</div>
+        <div class="cube-face f4">+</div>
+        <div class="cube-face f5">●</div>
+        <div class="cube-face f6">∞</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK / PORTFOLIO -->
+  <section class="work" id="work" data-section="work">
+    <div class="dot-grid"></div>
+    <div class="section-tag reveal"><span class="num">03</span><span class="dash"></span><span>Selected Work / Portfolio</span></div>
+    <div class="work-head">
+      <h2 class="work-title reveal">
+        Recent<br><em>projects.</em>
+      </h2>
+      <div class="work-meta reveal d1">
+        <div class="count-num"><span class="count" data-to="50" data-decimals="0">0</span><em>+</em></div>
+        <div>ausgelieferte Cases</div>
+      </div>
+    </div>
+
+    <div class="work-grid">
+      <div class="project-card large tilt hover-trigger reveal" data-project="nordisk">
+        <div class="project-img" style="background-image:url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=1200');"></div>
+        <div class="project-tag-pill"><span class="live-dot"></span> Live</div>
+        <div class="project-num">/01</div>
+        <div class="project-info">
+          <div class="project-meta"><span class="tag">Hospitality</span><span>2025</span></div>
+          <div class="project-name">Nordisk <em>Cabins</em></div>
+          <div class="project-desc">Premium booking-platform mit interaktivem 3D-Grundrissviewer und WebGL-Kamerafahrten durch die Cabins.</div>
+          <div class="project-cta">Case ansehen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+
+      <div class="project-card medium tilt hover-trigger reveal d1" data-project="atelier">
+        <div class="project-img" style="background-image:url('https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&q=80&w=1000');"></div>
+        <div class="project-num">/02</div>
+        <div class="project-info">
+          <div class="project-meta"><span class="tag">Fashion / E-Com</span><span>2025</span></div>
+          <div class="project-name">Atelier <em>Solen</em></div>
+          <div class="project-desc">Editorial fashion store mit Custom-Cursor, GSAP-Animations und Shopify-Headless-Setup.</div>
+          <div class="project-cta">Case ansehen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+
+      <div class="project-card thirds tilt hover-trigger reveal" data-project="keno">
+        <div class="project-img" style="background-image:url('https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&q=80&w=900');"></div>
+        <div class="project-num">/03</div>
+        <div class="project-info">
+          <div class="project-meta"><span class="tag">Automotive</span><span>2024</span></div>
+          <div class="project-name">Keno <em>Motors</em></div>
+          <div class="project-desc">Konfigurator mit Three.js-Modell und Echtzeit-Lackvisualisierung.</div>
+          <div class="project-cta">Case ansehen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+
+      <div class="project-card thirds tilt hover-trigger reveal d1" data-project="lumen">
+        <div class="project-img" style="background-image:url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&q=80&w=900');"></div>
+        <div class="project-num">/04</div>
+        <div class="project-info">
+          <div class="project-meta"><span class="tag">Health / SaaS</span><span>2024</span></div>
+          <div class="project-name">Lumen <em>Health</em></div>
+          <div class="project-desc">Patientenportal mit Dashboard, animierten Datavisualisierungen und Apple-Health-Integration.</div>
+          <div class="project-cta">Case ansehen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+
+      <div class="project-card thirds tilt hover-trigger reveal d2" data-project="obscura">
+        <div class="project-img" style="background-image:url('https://images.unsplash.com/photo-1561070791-2526d30994b8?auto=format&fit=crop&q=80&w=900');"></div>
+        <div class="project-num">/05</div>
+        <div class="project-info">
+          <div class="project-meta"><span class="tag">Type Foundry</span><span>2023</span></div>
+          <div class="project-name">Obscura <em>Type</em></div>
+          <div class="project-desc">Brutalistische Type-Specimen-Site mit Variable-Font-Playground und Webshop.</div>
+          <div class="project-cta">Case ansehen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+
+      <div class="project-card wide tilt hover-trigger reveal" data-project="studio-hope">
+        <div class="project-img" style="background-image:url('https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=1200');"></div>
+        <div class="project-num">/06</div>
+        <div class="project-info">
+          <div class="project-meta"><span class="tag">Brand Studio</span><span>2024</span></div>
+          <div class="project-name">Studio <em>Hope</em></div>
+          <div class="project-desc">Komplettes Rebranding inkl. Identity, Website und Showreel — Kunde lobte „die beste Übergabe, die ich je hatte".</div>
+          <div class="project-cta">Case ansehen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+
+      <div class="project-card small tilt hover-trigger reveal d1" data-project="halo">
+        <div class="project-img" style="background-image:url('https://images.unsplash.com/photo-1635322966219-b75ed372eb01?auto=format&fit=crop&q=80&w=900');"></div>
+        <div class="project-num">/07</div>
+        <div class="project-info">
+          <div class="project-meta"><span class="tag">Crypto / Fintech</span><span>2025</span></div>
+          <div class="project-name">Halo <em>Protocol</em></div>
+          <div class="project-desc">Onboarding-Flow für ein DeFi-Protokoll mit interaktiver 3D-Network-Visualisierung.</div>
+          <div class="project-cta">Case ansehen <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg></div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <!-- SERVICES -->
   <section id="services" data-section="services">
-    <div class="section-tag reveal"><span class="num">03</span><span class="dash"></span><span>Services / Pricing</span></div>
+    <div class="section-tag reveal"><span class="num">04</span><span class="dash"></span><span>Services / Pricing</span></div>
     <div class="services-head">
       <h2 class="services-title reveal">
         Was wir<br><em>bauen.</em>
@@ -850,7 +1239,7 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
 
   <!-- PROCESS -->
   <section class="process" id="process" data-section="process">
-    <div class="section-tag reveal"><span class="num">04</span><span class="dash"></span><span>Prozess / Workflow</span></div>
+    <div class="section-tag reveal"><span class="num">05</span><span class="dash"></span><span>Prozess / Workflow</span></div>
     <div class="services-head">
       <h2 class="services-title reveal">
         Vom Brief<br>zum <em>Launch.</em>
@@ -860,37 +1249,44 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
       </div>
     </div>
 
-    <div class="process-grid">
-      <div class="process-step tilt reveal">
-        <div class="num">01 — Discovery</div>
-        <svg class="icon tilt-layer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <h4 class="tilt-layer">Wir <em>hören</em> zu.</h4>
-        <p>Kick-off-Call. Wir verstehen deine Marke, dein Publikum und das Ziel. Keine Templates. Kein Bullshit.</p>
-      </div>
-      <div class="process-step tilt reveal d1">
-        <div class="num">02 — Design</div>
-        <svg class="icon tilt-layer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
-        <h4 class="tilt-layer">Pixel <em>perfect.</em></h4>
-        <p>Custom Design — Typo, Grid, Motion. Keine Themes. Jede Komponente individuell für deine Marke.</p>
-      </div>
-      <div class="process-step tilt reveal d2">
-        <div class="num">03 — Build</div>
-        <svg class="icon tilt-layer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-        <h4 class="tilt-layer">Code, <em>handcrafted.</em></h4>
-        <p>Sauberer Code. Lighthouse 95+. Animations, die nicht ruckeln. Optimiert für jedes Device.</p>
-      </div>
-      <div class="process-step tilt reveal d3">
-        <div class="num">04 — Launch</div>
-        <svg class="icon tilt-layer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/></svg>
-        <h4 class="tilt-layer">Go <em>live.</em></h4>
-        <p>Deploy, Übergabe und Support. Du bekommst Schulung, Dokumentation und einen direkten Draht zu mir.</p>
+    <div class="process-track" id="processTrack">
+      <div class="process-line"></div>
+      <div class="process-grid">
+        <div class="process-step tilt reveal">
+          <div class="step-orb tilt-layer">01</div>
+          <div class="num">Discovery</div>
+          <h4 class="tilt-layer">Wir <em>hören</em> zu.</h4>
+          <p>Kick-off-Call. Wir verstehen deine Marke, dein Publikum und das Ziel. Keine Templates. Kein Bullshit.</p>
+          <div class="duration"><span>Dauer</span><span class="pill">2–3 Tage</span></div>
+        </div>
+        <div class="process-step tilt reveal d1">
+          <div class="step-orb tilt-layer">02</div>
+          <div class="num">Design</div>
+          <h4 class="tilt-layer">Pixel <em>perfect.</em></h4>
+          <p>Custom Design — Typo, Grid, Motion. Keine Themes. Jede Komponente individuell für deine Marke.</p>
+          <div class="duration"><span>Dauer</span><span class="pill">5–10 Tage</span></div>
+        </div>
+        <div class="process-step tilt reveal d2">
+          <div class="step-orb tilt-layer">03</div>
+          <div class="num">Build</div>
+          <h4 class="tilt-layer">Code, <em>handcrafted.</em></h4>
+          <p>Sauberer Code. Lighthouse 95+. Animations, die nicht ruckeln. Optimiert für jedes Device.</p>
+          <div class="duration"><span>Dauer</span><span class="pill">7–14 Tage</span></div>
+        </div>
+        <div class="process-step tilt reveal d3">
+          <div class="step-orb tilt-layer">04</div>
+          <div class="num">Launch</div>
+          <h4 class="tilt-layer">Go <em>live.</em></h4>
+          <p>Deploy, Übergabe und Support. Du bekommst Schulung, Dokumentation und einen direkten Draht zu mir.</p>
+          <div class="duration"><span>Dauer</span><span class="pill">1–2 Tage</span></div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- REVIEWS -->
   <section id="reviews" data-section="reviews">
-    <div class="section-tag reveal"><span class="num">05</span><span class="dash"></span><span>Reviews / Trust</span></div>
+    <div class="section-tag reveal"><span class="num">06</span><span class="dash"></span><span>Reviews / Trust</span></div>
     <div class="reviews-top">
       <h2 class="reviews-title reveal">
         Was Kunden<br><em>sagen.</em>
@@ -930,8 +1326,9 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
   <!-- CTA -->
   <section class="cta" id="cta" data-section="cta">
     <div class="dot-grid"></div>
+    <div class="cta-canvas" id="ctaCanvas"></div>
     <div class="cta-glow"></div>
-    <div class="cta-eyebrow reveal">Ready when you are</div>
+    <div class="cta-eyebrow reveal">07 — Ready when you are</div>
     <h2 class="cta-title reveal d1">
       Lass uns<br>etwas <em>bauen.</em>
     </h2>
@@ -941,6 +1338,7 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
       </span>
     </button>
+    <div class="reveal d3" style="margin-top:30px;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);">Klicke auf den Knot — er reagiert.</div>
   </section>
 
   <!-- FOOTER -->
@@ -952,6 +1350,7 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
         <ul>
           <li><a class="hover-trigger" data-scroll="hero">Home</a></li>
           <li><a class="hover-trigger" data-scroll="about">Über</a></li>
+          <li><a class="hover-trigger" data-scroll="work">Work</a></li>
           <li><a class="hover-trigger" data-scroll="services">Services</a></li>
           <li><a class="hover-trigger" data-scroll="process">Prozess</a></li>
           <li><a class="hover-trigger" data-scroll="reviews">Reviews</a></li>
@@ -999,34 +1398,134 @@ footer{padding:80px 50px 40px;border-top:1px solid var(--line);}
   </div>
 </div>
 
-<!-- CONTACT PANEL -->
+<!-- CONTACT PANEL — MULTI STEP -->
 <div class="contact-panel" id="contactPanel">
+  <div class="contact-bg"></div>
   <div class="contact-close hover-trigger" onclick="closeContact()">✕</div>
   <div class="contact-inner">
     <div class="contact-eyebrow">Start a project</div>
     <h2 class="contact-title">Lass uns<br><em>reden.</em></h2>
-    <form onsubmit="sendMail(event)">
-      <div class="field">
-        <label>Service</label>
-        <input type="text" id="serviceInput" readonly>
+    <p class="contact-sub">Vier kurze Schritte — und dein Briefing landet direkt in meinem Postfach. <strong>Antwort innerhalb von 24h.</strong></p>
+
+    <div class="step-progress">
+      <span class="step-num" id="stepNum">01</span>
+      <span>von 04 —</span>
+      <span id="stepTitle">Service wählen</span>
+      <div class="dots" id="stepDots">
+        <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
       </div>
-      <div class="field">
-        <label>Name</label>
-        <input type="text" id="name" placeholder="Dein Name" required class="hover-trigger">
+    </div>
+
+    <div class="contact-steps" id="contactSteps">
+      <!-- STEP 1: SERVICE -->
+      <div class="step active" data-step="1">
+        <h3>Was darf's <em>werden?</em></h3>
+        <p class="help">Wähle eine Leistung — du kannst später noch Details ergänzen.</p>
+        <div class="svc-grid">
+          <button type="button" class="svc-card hover-trigger" data-svc="Kostenlose Demo" data-price="GRATIS">
+            <div class="svc-check">✓</div>
+            <div class="svc-num">/01</div>
+            <div class="svc-name">Kostenlose <em>Demo</em></div>
+            <div class="svc-price">Gratis</div>
+          </button>
+          <button type="button" class="svc-card hover-trigger" data-svc="Logo Design" data-price="individuell">
+            <div class="svc-check">✓</div>
+            <div class="svc-num">/02</div>
+            <div class="svc-name">Logo <em>Design</em></div>
+            <div class="svc-price">Individuell</div>
+          </button>
+          <button type="button" class="svc-card hover-trigger" data-svc="Moderne Website" data-price="ab 700€">
+            <div class="svc-check">✓</div>
+            <div class="svc-num">/03</div>
+            <div class="svc-name">Moderne <em>Website</em></div>
+            <div class="svc-price">ab 700€</div>
+          </button>
+          <button type="button" class="svc-card hover-trigger" data-svc="Professionelle Website" data-price="ab 800€">
+            <div class="svc-check">✓</div>
+            <div class="svc-num">/04</div>
+            <div class="svc-name">Profi <em>Website</em></div>
+            <div class="svc-price">ab 800€</div>
+          </button>
+        </div>
+        <div class="step-nav">
+          <button type="button" class="step-btn primary hover-trigger" id="step1Next" disabled>
+            Weiter <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </div>
       </div>
-      <div class="field">
-        <label>E-Mail</label>
-        <input type="email" id="email" placeholder="deine@email.com" required class="hover-trigger">
+
+      <!-- STEP 2: CONTACT INFO -->
+      <div class="step" data-step="2">
+        <h3>Wer ist <em>am Hörer?</em></h3>
+        <p class="help">Damit ich weiß, wem ich antworten darf.</p>
+        <div class="field">
+          <label>Dein Name</label>
+          <input type="text" id="name" placeholder="z. B. Max Mustermann" autocomplete="name" class="hover-trigger">
+        </div>
+        <div class="field">
+          <label>E-Mail</label>
+          <input type="email" id="email" placeholder="deine@email.com" autocomplete="email" class="hover-trigger">
+        </div>
+        <div class="field">
+          <label>Unternehmen <span style="text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <input type="text" id="company" placeholder="DCN GmbH" class="hover-trigger">
+        </div>
+        <div class="step-nav">
+          <button type="button" class="step-btn secondary hover-trigger" data-prev>← Zurück</button>
+          <button type="button" class="step-btn primary hover-trigger" id="step2Next" disabled>
+            Weiter <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </div>
       </div>
-      <div class="field">
-        <label>Nachricht</label>
-        <textarea id="message" rows="4" placeholder="Erzähl mir kurz von deinem Projekt..." required class="hover-trigger"></textarea>
+
+      <!-- STEP 3: PROJECT DETAILS -->
+      <div class="step" data-step="3">
+        <h3>Erzähl mir vom <em>Projekt.</em></h3>
+        <p class="help">Was hast du vor? Welches Ziel? Gibt es schon eine Idee, einen bestehenden Auftritt, ein Datum?</p>
+        <div class="field">
+          <label>Budget-Rahmen <span style="text-transform:none;letter-spacing:0;">(optional)</span></label>
+          <div class="budget-pills" id="budgetPills">
+            <button type="button" class="budget-pill hover-trigger" data-budget="< 500€">unter 500€</button>
+            <button type="button" class="budget-pill hover-trigger" data-budget="500–1.000€">500 – 1.000€</button>
+            <button type="button" class="budget-pill hover-trigger" data-budget="1.000–2.500€">1.000 – 2.500€</button>
+            <button type="button" class="budget-pill hover-trigger" data-budget="2.500€+">2.500€+</button>
+            <button type="button" class="budget-pill hover-trigger" data-budget="weiß ich nicht">weiß ich nicht</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Beschreibung</label>
+          <textarea id="message" rows="5" maxlength="600" placeholder="Erzähl mir kurz, was dir vorschwebt..." class="hover-trigger"></textarea>
+          <div class="field-counter"><span id="msgCount">0</span> / 600</div>
+        </div>
+        <div class="step-nav">
+          <button type="button" class="step-btn secondary hover-trigger" data-prev>← Zurück</button>
+          <button type="button" class="step-btn primary hover-trigger" id="step3Next" disabled>
+            Weiter <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </div>
       </div>
-      <button type="submit" class="send-btn hover-trigger">
-        Anfrage senden
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
-      </button>
-    </form>
+
+      <!-- STEP 4: REVIEW + SEND -->
+      <div class="step" data-step="4">
+        <h3>Stimmt <em>so?</em></h3>
+        <p class="help">Kurzer Check, dann ab ins Postfach.</p>
+        <div class="summary" id="summary"></div>
+        <div class="step-nav">
+          <button type="button" class="step-btn secondary hover-trigger" data-prev>← Zurück</button>
+          <button type="button" class="step-btn primary hover-trigger" id="sendBtn">
+            Anfrage senden <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="successScreen">
+        <div class="success-mark">✓</div>
+        <h3>Bereit zum <em>Absenden.</em></h3>
+        <p>Dein Mailprogramm öffnet sich gleich mit einer fertig vorbereiteten Mail. Einmal auf "Senden" klicken — dann landet alles bei mir.</p>
+        <button type="button" class="step-btn primary hover-trigger" onclick="closeContact()" style="max-width:240px;margin-top:14px;">Schließen</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1456,6 +1955,102 @@ bindHover();
 })();
 
 /* ============================================================
+   CTA 3D — TORUS KNOT
+============================================================ */
+(function initCta() {
+  const mount = document.getElementById('ctaCanvas');
+  if (!mount || !window.THREE) return;
+  try {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, mount.clientWidth / mount.clientHeight, 0.1, 100);
+    camera.position.z = 6;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    renderer.setClearColor(0x000000, 0);
+    mount.appendChild(renderer.domElement);
+
+    const geometry = new THREE.TorusKnotGeometry(1.4, 0.42, 220, 28, 2, 3);
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xCCFF00, wireframe: true, transparent: true, opacity: 0.55
+    });
+    const knot = new THREE.Mesh(geometry, material);
+    scene.add(knot);
+
+    // Solid darker overlay
+    const innerMat = new THREE.MeshBasicMaterial({
+      color: 0x000000, transparent: true, opacity: 0.85
+    });
+    const innerKnot = new THREE.Mesh(new THREE.TorusKnotGeometry(1.4, 0.4, 200, 24, 2, 3), innerMat);
+    scene.add(innerKnot);
+
+    // Stars
+    const sCount = 250;
+    const sPos = new Float32Array(sCount * 3);
+    for (let i = 0; i < sCount; i++) {
+      const r = 6 + Math.random() * 4;
+      const t = Math.random() * Math.PI * 2;
+      const p = Math.acos(Math.random() * 2 - 1);
+      sPos[i*3] = r*Math.sin(p)*Math.cos(t);
+      sPos[i*3+1] = r*Math.sin(p)*Math.sin(t);
+      sPos[i*3+2] = r*Math.cos(p);
+    }
+    const sGeo = new THREE.BufferGeometry();
+    sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+    const sMat = new THREE.PointsMaterial({ color: 0xCCFF00, size: 0.025, transparent: true, opacity: 0.4 });
+    const stars = new THREE.Points(sGeo, sMat);
+    scene.add(stars);
+
+    let mx = 0, my = 0;
+    let pulse = 0;
+    mount.addEventListener('mousemove', e => {
+      const r = mount.getBoundingClientRect();
+      mx = ((e.clientX - r.left) / r.width) * 2 - 1;
+      my = -(((e.clientY - r.top) / r.height) * 2 - 1);
+    });
+    mount.addEventListener('click', () => { pulse = 1.2; });
+
+    let visible = false;
+    new IntersectionObserver(es => es.forEach(e => visible = e.isIntersecting), { threshold: 0.05 }).observe(mount);
+
+    const clock = new THREE.Clock();
+    function loop() {
+      requestAnimationFrame(loop);
+      if (!visible) return;
+      const t = clock.getElapsedTime();
+      pulse *= 0.93;
+      const s = 1 + pulse * 0.25;
+      knot.rotation.x = t * 0.25 + my * 0.6;
+      knot.rotation.y = t * 0.32 + mx * 0.6;
+      innerKnot.rotation.copy(knot.rotation);
+      knot.scale.setScalar(s);
+      innerKnot.scale.setScalar(s * 0.99);
+      stars.rotation.y += 0.0006;
+      stars.rotation.x += 0.0003;
+      renderer.render(scene, camera);
+    }
+    loop();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = mount.clientWidth / mount.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(mount.clientWidth, mount.clientHeight);
+    });
+  } catch (err) {
+    console.warn('CTA WebGL failed:', err);
+  }
+})();
+
+/* ============================================================
+   PROCESS TRACK ANIMATION
+============================================================ */
+const procTrack = document.getElementById('processTrack');
+if (procTrack) {
+  new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) procTrack.classList.add('in'); }), { threshold: 0.2 }).observe(procTrack);
+}
+
+/* ============================================================
    SCROLL REVEAL + PROGRESS + SECTION INDEX
 ============================================================ */
 const reveals = document.querySelectorAll('.reveal, .split-line');
@@ -1585,31 +2180,174 @@ function proceedToContact() {
 }
 
 /* ============================================================
-   CONTACT PANEL
+   CONTACT PANEL — MULTI-STEP
 ============================================================ */
 const contactPanel = document.getElementById('contactPanel');
+const contactSteps = document.getElementById('contactSteps');
+const stepNumEl = document.getElementById('stepNum');
+const stepTitleEl = document.getElementById('stepTitle');
+const stepDots = document.querySelectorAll('#stepDots .dot');
+const successScreen = document.getElementById('successScreen');
+const STEP_TITLES = ['Service wählen', 'Kontaktdaten', 'Projektdetails', 'Bestätigen'];
+const formState = { service: '', price: '', name: '', email: '', company: '', budget: '', message: '' };
+let currentStep = 1;
+
+function setStep(n) {
+  currentStep = n;
+  contactSteps.querySelectorAll('.step').forEach(s => {
+    const i = parseInt(s.dataset.step);
+    s.classList.toggle('active', i === n);
+    s.classList.toggle('prev', i < n);
+  });
+  stepNumEl.textContent = String(n).padStart(2, '0');
+  stepTitleEl.textContent = STEP_TITLES[n - 1];
+  stepDots.forEach((d, i) => {
+    d.classList.toggle('active', i === n - 1);
+    d.classList.toggle('done', i < n - 1);
+  });
+}
+
 function openContact(service) {
-  document.getElementById('serviceInput').value = service;
+  if (service && service !== 'Allgemeine Anfrage') {
+    formState.service = service;
+    document.querySelectorAll('.svc-card').forEach(c => {
+      c.classList.toggle('selected', c.dataset.svc === service);
+      if (c.dataset.svc === service) formState.price = c.dataset.price;
+    });
+    document.getElementById('step1Next').disabled = !formState.service;
+  }
+  successScreen.classList.remove('visible');
   contactPanel.classList.add('open');
 }
 function closeContact() {
   contactPanel.classList.remove('open');
+  setTimeout(() => {
+    setStep(1);
+    successScreen.classList.remove('visible');
+  }, 700);
 }
-function sendMail(e) {
-  e.preventDefault();
-  const s = document.getElementById('serviceInput').value;
-  const n = document.getElementById('name').value;
-  const em = document.getElementById('email').value;
-  const m = document.getElementById('message').value;
+
+// Service select
+document.querySelectorAll('.svc-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.svc-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    formState.service = card.dataset.svc;
+    formState.price = card.dataset.price;
+    document.getElementById('step1Next').disabled = false;
+  });
+});
+
+// Budget pills
+document.querySelectorAll('.budget-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.budget-pill').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+    formState.budget = pill.dataset.budget;
+  });
+});
+
+// Field validation
+const nameInput = document.getElementById('name');
+const emailInput = document.getElementById('email');
+const companyInput = document.getElementById('company');
+const messageInput = document.getElementById('message');
+const msgCount = document.getElementById('msgCount');
+const step2Next = document.getElementById('step2Next');
+const step3Next = document.getElementById('step3Next');
+
+function validateStep2() {
+  const ok = nameInput.value.trim().length > 1 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
+  step2Next.disabled = !ok;
+}
+function validateStep3() {
+  step3Next.disabled = messageInput.value.trim().length < 10;
+}
+[nameInput, emailInput].forEach(i => i.addEventListener('input', validateStep2));
+companyInput.addEventListener('input', () => { formState.company = companyInput.value.trim(); });
+messageInput.addEventListener('input', () => {
+  msgCount.textContent = messageInput.value.length;
+  validateStep3();
+});
+
+// Step navigation
+document.getElementById('step1Next').addEventListener('click', () => { setStep(2); validateStep2(); });
+step2Next.addEventListener('click', () => {
+  formState.name = nameInput.value.trim();
+  formState.email = emailInput.value.trim();
+  formState.company = companyInput.value.trim();
+  setStep(3);
+  validateStep3();
+});
+step3Next.addEventListener('click', () => {
+  formState.message = messageInput.value.trim();
+  buildSummary();
+  setStep(4);
+});
+document.querySelectorAll('[data-prev]').forEach(b => b.addEventListener('click', () => setStep(currentStep - 1)));
+
+function buildSummary() {
+  const sum = document.getElementById('summary');
+  sum.innerHTML = `
+    <div class="row"><div class="key">Service</div><div class="val"><strong>${escapeHtml(formState.service)}</strong> · ${escapeHtml(formState.price)}</div></div>
+    <div class="row"><div class="key">Name</div><div class="val">${escapeHtml(formState.name)}</div></div>
+    <div class="row"><div class="key">E-Mail</div><div class="val">${escapeHtml(formState.email)}</div></div>
+    ${formState.company ? `<div class="row"><div class="key">Firma</div><div class="val">${escapeHtml(formState.company)}</div></div>` : ''}
+    ${formState.budget ? `<div class="row"><div class="key">Budget</div><div class="val">${escapeHtml(formState.budget)}</div></div>` : ''}
+    <div class="row"><div class="key">Briefing</div><div class="val">${escapeHtml(formState.message)}</div></div>
+  `;
+}
+function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])); }
+
+document.getElementById('sendBtn').addEventListener('click', sendMail);
+
+function sendMail() {
   const recipient = "tahadurcan@gmail.com";
-  const subject = `Neue Projektanfrage: ${s}`;
-  const body = `Hallo Taha,%0D%0A%0D%0AIch habe Interesse an folgender Dienstleistung: ${s}%0D%0A%0D%0A--- MEINE DATEN ---%0D%0AName: ${n}%0D%0AEmail: ${em}%0D%0ANachricht:%0D%0A${m}%0D%0A%0D%0ABitte um Rückmeldung.`;
-  window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
-  const btn = document.querySelector('.send-btn');
-  const original = btn.innerHTML;
-  btn.innerHTML = "Mail-Programm wird geöffnet...";
-  setTimeout(() => { btn.innerHTML = original; closeContact(); }, 2500);
+  const subject = `Neue Projektanfrage: ${formState.service}`;
+  const body =
+`Hallo Taha,
+
+Ich habe Interesse an folgender Dienstleistung: ${formState.service} (${formState.price})
+
+--- MEINE DATEN ---
+Name: ${formState.name}
+E-Mail: ${formState.email}
+${formState.company ? 'Firma: ' + formState.company + '\n' : ''}${formState.budget ? 'Budget: ' + formState.budget + '\n' : ''}
+--- BRIEFING ---
+${formState.message}
+
+Bitte um Rückmeldung.`;
+  window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  successScreen.classList.add('visible');
+  // confetti-ish burst
+  burstAt(window.innerWidth - 200, window.innerHeight / 2, 30);
 }
+
+function burstAt(x, y, n = 14) {
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement('div');
+    p.className = 'click-particle';
+    p.style.left = x + 'px';
+    p.style.top = y + 'px';
+    document.body.appendChild(p);
+    const angle = (i / n) * Math.PI * 2 + Math.random() * 0.4;
+    const dist = 70 + Math.random() * 100;
+    p.animate([
+      { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+      { transform: `translate(calc(-50% + ${Math.cos(angle) * dist}px), calc(-50% + ${Math.sin(angle) * dist}px)) scale(0)`, opacity: 0 }
+    ], { duration: 900, easing: 'cubic-bezier(0.19,1,0.22,1)' }).onfinish = () => p.remove();
+  }
+}
+
+/* ============================================================
+   PROJECT CARDS — open contact with project context
+============================================================ */
+document.querySelectorAll('.project-card').forEach(card => {
+  card.addEventListener('click', () => {
+    const name = card.querySelector('.project-name')?.innerText.replace(/\s+/g, ' ').trim();
+    openContact(`Projekt-Anfrage zu "${name}"`);
+  });
+});
 
 /* ============================================================
    ESC TO CLOSE
